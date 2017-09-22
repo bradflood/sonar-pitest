@@ -11,17 +11,17 @@
 
 	<groupId>org.sonarsource.pitest</groupId>
 	<artifactId>sonar-pitest-plugin</artifactId>
-    <version>0.8-SNAPSHOT</version>	
+	<version>0.8-SNAPSHOT</version>
 	<packaging>sonar-plugin</packaging>
-	
+
 	<name>Sonar Pitest Plugin</name>
 	<description>Plugin for the mutation testing tool Pitest</description>
 	<url>https://github.com/SonarQubeCommunity/sonar-pitest</url>
 	<inceptionYear>2009</inceptionYear>
 
 	<organization>
-		<name>Alexandre Victoor</name>
-		<url>https://github.com/alexvictoor</url>
+		<name>Vinod Anandan</name>
+		<url>https://github.com/VinodAnandan</url>
 	</organization>
 
 	<issueManagement>
@@ -46,9 +46,9 @@
 
 	<properties>
 		<license.owner>${project.organization.name}</license.owner>
-        <license.title>Sonar Pitest Plugin</license.title>
-        <license.years>2009-2016</license.years>		
-		<license.mailto>alexvictoor@gmail.com</license.mailto>
+		<license.title>Sonar Pitest Plugin</license.title>
+		<license.years>2009-2017</license.years>
+		<license.mailto>vinod@owasp.org</license.mailto>
 		<sonar.buildVersion>6.5</sonar.buildVersion>
 		<sonar-java.version>4.12</sonar-java.version>
 
@@ -134,6 +134,19 @@
 				<configuration>
 					<testNGArtifactName>none:none</testNGArtifactName>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.9</version>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
