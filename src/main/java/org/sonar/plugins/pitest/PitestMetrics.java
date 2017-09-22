@@ -39,15 +39,7 @@ import org.sonar.api.measures.Metric.Builder;
 import org.sonar.api.measures.Metric.ValueType;
 import org.sonar.api.measures.Metrics;
 
-<<<<<<< HEAD
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
-
-=======
->>>>>>> master
 /**
  * Metrics for the sonar pitest plugin.
  * 
@@ -103,11 +95,8 @@ public class PitestMetrics implements Metrics {
 	}
 	
 	private static Metric<Serializable> buildMetric(Builder builder, boolean qualitative) {
-<<<<<<< HEAD
 	  Metric<Serializable> metric = builder.create();
-=======
-		Metric<Serializable> metric = builder.create();
->>>>>>> master
+
 		METRICS.add(metric);
 		if (!qualitative) {
 			QUANTITATIVE_METRICS.add(metric);
