@@ -3,7 +3,7 @@ set -euo pipefail
 
 #
 # Reference: https://github.com/SonarSource/sonarqube/blob/master/travis.sh
-#
+#   
 
 SONAR_HOST_URL=https://sonarcloud.io/
 
