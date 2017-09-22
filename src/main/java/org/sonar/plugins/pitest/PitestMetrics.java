@@ -19,17 +19,35 @@
  */
 package org.sonar.plugins.pitest;
 
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_COVERAGE_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_DATA_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_DETECTED_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_KILLED_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_MEMORY_ERROR_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_NO_COVERAGE_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_SURVIVED_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_TIMED_OUT_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_TOTAL_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_UNKNOWN_KEY;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.Metric.Builder;
 import org.sonar.api.measures.Metric.ValueType;
 import org.sonar.api.measures.Metrics;
 
+<<<<<<< HEAD
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
 
+=======
+>>>>>>> master
 /**
  * Metrics for the sonar pitest plugin.
  * 
@@ -85,7 +103,11 @@ public class PitestMetrics implements Metrics {
 	}
 	
 	private static Metric<Serializable> buildMetric(Builder builder, boolean qualitative) {
+<<<<<<< HEAD
 	  Metric<Serializable> metric = builder.create();
+=======
+		Metric<Serializable> metric = builder.create();
+>>>>>>> master
 		METRICS.add(metric);
 		if (!qualitative) {
 			QUANTITATIVE_METRICS.add(metric);
@@ -105,6 +127,7 @@ public class PitestMetrics implements Metrics {
 	/**
 	 * @see Metrics#getMetrics()
 	 */
+	@Override
 	public List<Metric> getMetrics() {
 		return METRICS;
 	}

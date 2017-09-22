@@ -19,13 +19,13 @@
  */
 package org.sonar.plugins.pitest;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer;
 import org.sonar.api.measures.Metric;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Computer that processes the aggregated quantitative metric for a component from all the quantitative metrics
@@ -59,7 +59,7 @@ public class PitestComputer implements MeasureComputer {
   }
 
   public List<String> getQuantitativeKeys() {
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
     for(Metric<Serializable> m : PitestMetrics.getQuantitativeMetrics()){
       result.add(m.getKey());
     }
