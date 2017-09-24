@@ -56,8 +56,10 @@ import org.sonar.api.server.ServerSide;
 @ExtensionPoint
 public class PitestMetrics implements Metrics {
 
-	private static final List<Metric> METRICS = new ArrayList<>();
-	private static final List<Metric> QUANTITATIVE_METRICS = new ArrayList<>();
+  // cannot change type for METRICS until the SonarQube API changes
+	@SuppressWarnings("rawtypes")
+  private static final List<Metric> METRICS = new ArrayList<>(); 
+	private static final List<Metric<Serializable>> QUANTITATIVE_METRICS = new ArrayList<>();
 	
 	public static final String PITEST_DOMAIN = "Mutation analysis";
 
@@ -124,7 +126,8 @@ public class PitestMetrics implements Metrics {
 	/**
 	 * @see Metrics#getMetrics()
 	 */
-	@Override
+	@SuppressWarnings("rawtypes")
+  @Override
 	public List<Metric> getMetrics() {
 		return METRICS;
 	}
@@ -133,7 +136,7 @@ public class PitestMetrics implements Metrics {
 	 * Returns the pitest quantitative metrics list.
 	 * @return {@link List<Metric>} The pitest quantitative metrics list.
 	 */
-	public static List<Metric> getQuantitativeMetrics() {
+	public static List<Metric<Serializable>> getQuantitativeMetrics() {
 		return QUANTITATIVE_METRICS;
 	}
 }

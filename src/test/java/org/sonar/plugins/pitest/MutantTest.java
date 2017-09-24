@@ -30,13 +30,23 @@ public class MutantTest {
   public static final String RETURN_VALS_MUTATOR = "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator";
 
   @Test
-  public void should_get_path_to_source_file() {
+  public void should_get_path_to_java_source_file() {
     // given
-    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR, "com/foo/Bar.java");
+    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR, "Bar.java");
     // when
     String path = mutant.sourceRelativePath();
     //then
     assertThat(path).isEqualTo("com/foo/Bar.java");
+  }
+  
+  @Test
+  public void should_get_path_to_kotlin_source_file() {
+    // given
+    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR, "Bar.kt");
+    // when
+    String path = mutant.sourceRelativePath();
+    //then
+    assertThat(path).isEqualTo("Bar.kt");
   }
 
   @Test

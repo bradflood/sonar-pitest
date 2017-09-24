@@ -110,7 +110,7 @@ public class XmlReportParser {
       try {
         mutatedClass = stream.getElementText();
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        logException(e.getClass().getSimpleName(), "processing tag MutatedClass");
       }
     }
 
@@ -118,7 +118,7 @@ public class XmlReportParser {
       try {
          sourceFile = stream.getElementText();
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        logException(e.getClass().getSimpleName(), "processing tag sourceFile");
       }
     }
 
@@ -126,20 +126,28 @@ public class XmlReportParser {
       try {
         lineNumber = Integer.parseInt(stream.getElementText().trim());
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        logException(e.getClass().getSimpleName(), "processing tag lineNumber");
       }
     }
 
+
+    
     private void handleMutator() {
       String mutator;
       try {
         mutator = stream.getElementText();
+        mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator, sourceFile));        
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        logException(e.getClass().getSimpleName(), "processing tag mutator");
       }
-      mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator, sourceFile));
+      
     }
 
+    private void logException(String exceptionName, String activity) {
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("caught %s %s.. ignoring ", exceptionName, activity );
+      }
+    }
     private void closeXmlStream() {
       if (stream != null) {
         try {

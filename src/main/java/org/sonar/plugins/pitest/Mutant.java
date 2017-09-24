@@ -44,17 +44,27 @@ public class Mutant {
     this.mutator = Mutator.parse(mutatorKey);
   }
 
-
   public String sourceRelativePath() {
-      if(sourceFile!=null) {
-          return sourceFile;
-      }else{
-          // the old version of pitest mutate only .java file and don't have a sourceFile
-          final StringTokenizer tok = new StringTokenizer(className, "$");
-          final String classNameFiltered = tok.nextToken();
-          return classNameFiltered.replace('.', '/') + ".java";
-      }
+    if (sourceFile != null) {
+      return sourceFile;
+    } else {
+      // the old version of pitest mutate only .java file and don't have a sourceFile
+      final StringTokenizer tok = new StringTokenizer(className, "$");
+      final String classNameFiltered = tok.nextToken();
+      return classNameFiltered.replace('.', '/') + ".java";
+    }
   }
+
+  public String sourceRelativeJavaPath() {
+    final StringTokenizer tok = new StringTokenizer(className, "$");
+    final String classNameFiltered = tok.nextToken();
+    return classNameFiltered.replace('.', '/') + ".java";
+  }
+  
+  public String sourceRelativeKotlinPath() {
+    return sourceFile ;
+  }
+  
 
   public String violationDescription() {
     return mutator.getDescription() + " without breaking the tests";
@@ -62,7 +72,8 @@ public class Mutant {
 
   @Override
   public String toString() {
-    return "{ \"d\" : " + detected + ", \"s\" : \"" + mutantStatus + "\", \"c\" : \"" + className + "\", \"mname\" : \"" + mutator.getName() + "\", \"mdesc\" : \"" + mutator.getDescription() + "\", \"sourceFile\" : \"" + sourceFile + "\"  }";
+    return "{ \"d\" : " + detected + ", \"s\" : \"" + mutantStatus + "\", \"c\" : \"" + className + "\", \"mname\" : \"" + mutator.getName() + "\", \"mdesc\" : \""
+      + mutator.getDescription() + "\", \"sourceFile\" : \"" + sourceFile + "\"  }";
   }
 
 }
