@@ -19,17 +19,12 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Arrays;
-
 import org.junit.Test;
-import org.sonar.api.ce.measure.Component;
-import org.sonar.api.ce.measure.Settings;
 import org.sonar.api.ce.measure.MeasureComputer.MeasureComputerDefinition;
-import org.sonar.api.ce.measure.test.TestIssue;
 import org.sonar.api.ce.measure.test.TestMeasureComputerContext;
 import org.sonar.api.ce.measure.test.TestMeasureComputerDefinitionContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PitestComputerTest {
 

@@ -19,14 +19,13 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import com.google.common.io.Resources;
 import java.io.File;
 import java.util.Collection;
-
 import org.junit.Before;
 import org.junit.Test;
-import com.google.common.io.Resources;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class XmlReportParserTest {
 

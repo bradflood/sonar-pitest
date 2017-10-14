@@ -19,6 +19,19 @@
  */
 package org.sonar.plugins.pitest;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.batch.InstantiationStrategy;
+import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.ce.ComputeEngineSide;
+import org.sonar.api.measures.Metric;
+import org.sonar.api.measures.Metric.Builder;
+import org.sonar.api.measures.Metric.ValueType;
+import org.sonar.api.measures.Metrics;
+import org.sonar.api.server.ServerSide;
+
 import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_COVERAGE_KEY;
 import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_DATA_KEY;
 import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_DETECTED_KEY;
@@ -29,20 +42,6 @@ import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_SURVIVED_KEY;
 import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_TIMED_OUT_KEY;
 import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_TOTAL_KEY;
 import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_UNKNOWN_KEY;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.sonar.api.ExtensionPoint;
-import org.sonar.api.batch.InstantiationStrategy;
-import org.sonar.api.batch.ScannerSide;
-import org.sonar.api.ce.ComputeEngineSide;
-import org.sonar.api.measures.Metric;
-import org.sonar.api.measures.Metric.Builder;
-import org.sonar.api.measures.Metric.ValueType;
-import org.sonar.api.measures.Metrics;
-import org.sonar.api.server.ServerSide;
 
 /**
  * Metrics for the sonar pitest plugin.

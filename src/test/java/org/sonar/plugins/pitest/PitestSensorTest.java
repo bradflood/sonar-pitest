@@ -19,6 +19,31 @@
  */
 package org.sonar.plugins.pitest;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.FileMetadata;
+import org.sonar.api.batch.fs.internal.Metadata;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.Configuration;
+import org.sonar.api.config.internal.ConfigurationBridge;
+import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.rules.ActiveRule;
+import org.sonar.api.rules.Rule;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -39,33 +64,6 @@ import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_NO_COVERAGE;
 import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_SURVIVED;
 import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_TOTAL;
 import static org.sonar.plugins.pitest.PitestMetrics.MUTATIONS_UNKNOWN;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.fs.internal.FileMetadata;
-import org.sonar.api.batch.fs.internal.Metadata;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.config.Configuration;
-import org.sonar.api.config.internal.ConfigurationBridge;
-import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.rules.ActiveRule;
-import org.sonar.api.rules.Rule;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PitestSensorTest {

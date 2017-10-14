@@ -22,7 +22,9 @@ package org.sonar.plugins.pitest;
 import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer;
 
-import static org.sonar.plugins.pitest.PitestMetricsKeys.*;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_COVERAGE_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_DETECTED_KEY;
+import static org.sonar.plugins.pitest.PitestMetricsKeys.MUTATIONS_TOTAL_KEY;
 
 /**
  * Computer for calculating the mutation coverage of a component based on the detected vs total mutations.

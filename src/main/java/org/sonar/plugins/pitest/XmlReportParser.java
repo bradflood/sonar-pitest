@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.pitest;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,19 +28,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.ExtensionPoint;
 import org.sonar.api.batch.ScannerSide;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
 
 @ScannerSide
 @ExtensionPoint

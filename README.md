@@ -15,6 +15,13 @@ Compatibility Matrix
 | Sonarqube 4.5.X  | sonar pitest 0.4 ([download](http://central.maven.org/maven2/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.4/sonar-pitest-plugin-0.4.jar)) |
 | Sonar 3.7  | sonar pitest 0.5 ([download](http://central.maven.org/maven2/org/codehaus/sonar-plugins/sonar-pitest-plugin/0.5/sonar-pitest-plugin-0.5.jar)) |
 
+
+Contributing
+------------
+### Pull Request (PR)
+
+To submit a contribution, create a pull request for this repository. Please make sure that you follow the SonarQube Developer Guidelines [code style](https://github.com/SonarSource/sonar-developer-toolset#code-style) and all tests are passing.
+
 Description / Features
 ----------------------
 PIT is a mutation testing tool for java. You can check out the official pitest web site for more details on mutation testing and PIT.

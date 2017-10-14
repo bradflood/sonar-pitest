@@ -11,7 +11,7 @@
 
 	<groupId>org.sonarsource.pitest</groupId>
 	<artifactId>sonar-pitest-plugin</artifactId>
-	<version>0.8-SNAPSHOT</version>
+	<version>0.9-SNAPSHOT</version>
 	<packaging>sonar-plugin</packaging>
 
 	<name>Sonar Pitest Plugin</name>
@@ -75,6 +75,7 @@
 		<license.mailto>vinod@owasp.org</license.mailto>
 		<sonar.buildVersion>6.5</sonar.buildVersion>
 		<sonar-java.version>4.12</sonar-java.version>
+		<jacoco.version>0.7.9</jacoco.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.min.version>1.8</jdk.min.version>

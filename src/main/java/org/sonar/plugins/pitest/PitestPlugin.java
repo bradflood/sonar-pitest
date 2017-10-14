@@ -19,11 +19,16 @@
  */
 package org.sonar.plugins.pitest;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.utils.Version;
 
-import static org.sonar.plugins.pitest.PitestConstants.*;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
 
 /**
  * This class is the entry point for all PIT extensions
@@ -33,14 +38,16 @@ public final class PitestPlugin implements Plugin {
   @Override
   public void define(Context context) {
 
-    context.addExtensions(
+    ImmutableList.Builder<Object> builder = ImmutableList.builder();
+    Version sonarQubeVersion = context.getSonarQubeVersion();
+
+    builder.add(
       PropertyDefinition.builder(MODE_KEY)
         .defaultValue(MODE_SKIP)
         .name("PIT activation mode")
         .description("Possible values:  empty (means skip) and 'reuseReport'")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
-
       PropertyDefinition.builder(REPORT_DIRECTORY_KEY)
         .defaultValue(REPORT_DIRECTORY_DEF)
         .name("Output directory for the PIT reports")
@@ -48,14 +55,39 @@ public final class PitestPlugin implements Plugin {
           "located in the default directory (i.e. target/pit-reports)")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
-
       XmlReportParser.class,
       XmlReportFinder.class,
       PitestRulesDefinition.class,
       PitestSensor.class,
       PitestMetrics.class,
       PitestComputer.class,
-      PitestCoverageComputer.class
-    );
+      PitestCoverageComputer.class);
+
+    context.addExtension(builder.build());
+
+    // context.addExtensions(
+    // PropertyDefinition.builder(MODE_KEY)
+    // .defaultValue(MODE_SKIP)
+    // .name("PIT activation mode")
+    // .description("Possible values: empty (means skip) and 'reuseReport'")
+    // .onQualifiers(Qualifiers.PROJECT)
+    // .build(),
+    //
+    // PropertyDefinition.builder(REPORT_DIRECTORY_KEY)
+    // .defaultValue(REPORT_DIRECTORY_DEF)
+    // .name("Output directory for the PIT reports")
+    // .description("This property is needed when the 'reuseReport' mode is activated and the reports are not " +
+    // "located in the default directory (i.e. target/pit-reports)")
+    // .onQualifiers(Qualifiers.PROJECT)
+    // .build(),
+    //
+    // XmlReportParser.class,
+    // XmlReportFinder.class,
+    // PitestRulesDefinition.class,
+    // PitestSensor.class,
+    // PitestMetrics.class,
+    // PitestComputer.class,
+    // PitestCoverageComputer.class
+    // );
   }
 }

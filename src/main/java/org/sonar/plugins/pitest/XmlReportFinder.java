@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.sonar.api.ExtensionPoint;
 import org.sonar.api.batch.ScannerSide;
 

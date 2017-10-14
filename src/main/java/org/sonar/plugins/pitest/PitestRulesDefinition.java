@@ -21,7 +21,11 @@ package org.sonar.plugins.pitest;
 
 import org.sonar.api.server.rule.RulesDefinition;
 
-import static org.sonar.plugins.pitest.PitestConstants.*;
+import static org.sonar.plugins.pitest.PitestConstants.COVERAGE_RATIO_PARAM;
+import static org.sonar.plugins.pitest.PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_NAME;
+import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
 
 public class PitestRulesDefinition implements RulesDefinition {
 

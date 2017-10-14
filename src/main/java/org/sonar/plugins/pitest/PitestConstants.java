@@ -29,9 +29,7 @@ package org.sonar.plugins.pitest;
  */
 public final class PitestConstants {
 
-  private PitestConstants() {
-
-  }
+  private PitestConstants() { }
 
   public static final String REPOSITORY_KEY = "pitest";
   public static final String REPOSITORY_NAME = "Pitest";

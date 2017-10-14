@@ -19,17 +19,8 @@
  */
 package org.sonar.plugins.pitest;
 
-import static org.sonar.plugins.pitest.PitestConstants.COVERAGE_RATIO_PARAM;
-import static org.sonar.plugins.pitest.PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
-import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
-
 import java.io.Serializable;
 import java.util.Collection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicate;
@@ -45,6 +36,14 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
+
+import static org.sonar.plugins.pitest.PitestConstants.COVERAGE_RATIO_PARAM;
+import static org.sonar.plugins.pitest.PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
+import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
+import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
 
 /**
  * Sonar sensor for pitest mutation coverage analysis.

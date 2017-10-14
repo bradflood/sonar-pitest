@@ -19,7 +19,12 @@
  */
 package org.sonar.plugins.pitest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Mutants for a given java source file
