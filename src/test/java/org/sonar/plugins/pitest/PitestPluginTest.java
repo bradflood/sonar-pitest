@@ -37,7 +37,7 @@ public class PitestPluginTest {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(5, 6), SonarQubeSide.SCANNER);
     Plugin.Context context = new Plugin.Context(runtime);
     underTest.define(context);
-    assertThat(context.getExtensions()).hasSize(9);
+    assertThat(context.getExtensions()).hasSize(10);
   }
   
   @Test
@@ -47,7 +47,7 @@ public class PitestPluginTest {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6,7), SonarQubeSide.SCANNER);
     Plugin.Context context = new Plugin.Context(runtime);
     underTest.define(context);
-    assertThat(context.getExtensions()).hasSize(9);
+    assertThat(context.getExtensions()).hasSize(10);
   }
   
   @Test
@@ -57,7 +57,7 @@ public class PitestPluginTest {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(5, 6), SonarQubeSide.SCANNER);
     Plugin.Context context = new Plugin.Context(runtime);
     underTest.define(context);
-    assertThat(context.getExtensions()).hasSize(9);
+    assertThat(context.getExtensions()).hasSize(10);
   }
   @Test
   public void test_compute_engine_side_plugin_extensions_compatible_with_6_7() {
@@ -66,6 +66,6 @@ public class PitestPluginTest {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER);
     Plugin.Context context = new Plugin.Context(runtime);
     underTest.define(context);
-    assertThat(context.getExtensions()).hasSize(9);
+    assertThat(context.getExtensions()).hasSize(10);
   }  
 }

@@ -54,7 +54,7 @@ import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
 public class PitestSensor implements Sensor {
 
   private static final Logger LOGGER = Loggers.get(PitestSensor.class);
-  private static final String SENSOR_NAME = "Pitest Mutation Test";
+  static final String SENSOR_NAME = "Pitest Mutation Test";
 
   private final Configuration configuration;
   private final XmlReportParser parser;
@@ -62,6 +62,7 @@ public class PitestSensor implements Sensor {
   private final XmlReportFinder xmlReportFinder;
   private final FileSystem fileSystem;
   private final String executionMode;
+  private final FilePredicate fileSystemExecutionPredicate;  
 
   public PitestSensor(Configuration configuration, XmlReportParser parser, RulesProfile rulesProfile, XmlReportFinder xmlReportFinder, FileSystem fileSystem) {
     this.configuration = configuration;
@@ -70,39 +71,46 @@ public class PitestSensor implements Sensor {
     this.xmlReportFinder = xmlReportFinder;
     this.fileSystem = fileSystem;
     this.executionMode = configuration.get(MODE_KEY).orElse(null);
+    this.fileSystemExecutionPredicate = fileSystem.predicates().and(
+      fileSystem.predicates().hasType(InputFile.Type.MAIN),
+      fileSystem.predicates().hasLanguages("java", "kt"));
   }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguages("java", "kt");
     descriptor.name(SENSOR_NAME);
+    descriptor.onlyOnLanguages("java", "kt");
+    descriptor.onlyOnFileType(InputFile.Type.MAIN);
+    descriptor.createIssuesForRuleRepository(REPOSITORY_KEY);
+    descriptor.onlyWhenConfiguration(conf -> configuration.hasKey(MODE_KEY) && configuration.hasKey(REPORT_DIRECTORY_KEY));
   }
 
   @Override
   public void execute(SensorContext context) {
+    // TODO: I believe this is no longer needed since we are now providing more details in the SensorDescriptor. verify 
+    if (!fileSystem.hasFiles(fileSystemExecutionPredicate)) {
+      LOGGER.debug("file system execution predicate not satisfied {}. returning", fileSystemExecutionPredicate);
+      return;
+    }
+    
     if (MODE_SKIP.equals(executionMode)) {
       LOGGER.debug("executionMode is skip. returning");
       return;
     }
-    String reportDirectoryPath = configuration.get(REPORT_DIRECTORY_KEY).orElse(null);
-    if (reportDirectoryPath == null) {
-      LOGGER.debug("reportDirectoryPath not found. returning");
-      return;
-    }
 
     java.io.File projectDirectory = fileSystem.baseDir();
+    String reportDirectoryPath = configuration.get(REPORT_DIRECTORY_KEY).orElse(null);
 
     java.io.File reportDirectory = new java.io.File(projectDirectory, reportDirectoryPath);
     java.io.File xmlReport = xmlReportFinder.findReport(reportDirectory);
     if (xmlReport == null) {
-      LOGGER.warn("No XML PIT report found in directory {}. Checkout plugin documentation for more detailed explanations: https://github.com/SonarQubeCommunity/sonar-pitest",
-        reportDirectory);
+      LOGGER.warn("No XML PIT report found in directory {} !", reportDirectory);
+      LOGGER.warn("Checkout plugin documentation for more detailed explanations: https://github.com/SonarQubeCommunity/sonar-pitest");
       return;
     }
 
     Collection<Mutant> mutants = parser.parse(xmlReport);
     processProjectReport(new ProjectReport(mutants), context);
-
   }
 
   private void processProjectReport(ProjectReport projectReport, SensorContext context) {
@@ -121,7 +129,7 @@ public class PitestSensor implements Sensor {
       if (isMutantRuleActive(rulesProfile)) {
         addIssueForSurvivingMutants(context, inputFile, sourceFileReport);
       }
-      
+
       if (isMutationCoverageRuleActive(rulesProfile)) {
         ActiveRule coverageRule = rulesProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
         generateCoverageViolations(context, inputFile, sourceFileReport, coverageRule);
@@ -144,7 +152,6 @@ public class PitestSensor implements Sensor {
       // saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_DATA, json);
     }
   }
-
 
   private <T extends Serializable> void saveMetricOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
     context.<T>newMeasure()
@@ -203,11 +210,11 @@ public class PitestSensor implements Sensor {
   }
 
   private boolean isMutantRuleActive(RulesProfile qualityProfile) {
-    return (qualityProfile.getActiveRule(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY) != null) ;
+    return (qualityProfile.getActiveRule(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY) != null);
   }
 
   private boolean isMutationCoverageRuleActive(RulesProfile qualityProfile) {
-    return (qualityProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY) != null) ;
+    return (qualityProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY) != null);
   }
 
   @Override
