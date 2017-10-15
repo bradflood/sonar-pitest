@@ -19,12 +19,9 @@
  */
 package org.sonar.plugins.pitest;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import org.sonar.api.ce.measure.Measure;
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.ce.ComputeEngineSide;
 import org.sonar.api.ce.measure.MeasureComputer;
-import org.sonar.api.measures.Metric;
 
 /**
  * Computer that processes the aggregated quantitative metric for a component from all the quantitative metrics
@@ -32,35 +29,40 @@ import org.sonar.api.measures.Metric;
  *
  * @author <a href="mailto:gerald.muecke@devcon5.io">Gerald M&uuml;cke</a>
  */
+@ComputeEngineSide
+@ExtensionPoint
 public class PitestComputer implements MeasureComputer {
 
   @Override
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
 
     return defContext.newDefinitionBuilder()
-      .setOutputMetrics(getQuantitativeKeys().toArray(new String[0]))
+      // FIXME: add output metrics
+      // .setOutputMetrics(getQuantitativeKeys().toArray(new String[0]))
       .build();
   }
 
+  @Override
   public void compute(final MeasureComputerContext context) {
-    for (String metricKey : getQuantitativeKeys()) {
-      if (context.getMeasure(metricKey) == null) {
-        Integer sum = 0;
-        for( Measure m : context.getChildrenMeasures(metricKey)) {
-          sum += m.getIntValue();
-        }
-        if(sum > 0) {
-          context.addMeasure(metricKey, sum);
-        }
-      }
-    }
+    // FIXME: refactor
+    // for (String metricKey : getQuantitativeKeys()) {
+    // if (context.getMeasure(metricKey) == null) {
+    // Integer sum = 0;
+    // for (Measure m : context.getChildrenMeasures(metricKey)) {
+    // sum += m.getIntValue();
+    // }
+    // if (sum > 0) {
+    // context.addMeasure(metricKey, sum);
+    // }
+    // }
+    // }
   }
 
-  public List<String> getQuantitativeKeys() {
-    final List<String> result = new ArrayList<>();
-    for(Metric<Serializable> m : PitestMetrics.getQuantitativeMetrics()){
-      result.add(m.getKey());
-    }
-    return result;
-  }
+  // public List<String> getQuantitativeKeys() {
+  // final List<String> result = new ArrayList<>();
+  // for (Metric<Serializable> m : PitestMetrics.getQuantitativeMetrics()) {
+  // result.add(m.getKey());
+  // }
+  // return result;
+  // }
 }

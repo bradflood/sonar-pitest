@@ -29,6 +29,7 @@ import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
 
 public class PitestRulesDefinition implements RulesDefinition {
 
+  @Override
   public void define(Context context) {
     NewRepository repository = context
       .createRepository(REPOSITORY_KEY, "java")
@@ -39,7 +40,8 @@ public class PitestRulesDefinition implements RulesDefinition {
       .setName("Survived mutant");
 
     repository.createRule(INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)
-      .setHtmlDescription("An issue is created on a file as soon as the mutation coverage on this file is less than the required threshold. It gives the number of mutations to be covered in order to reach the required threshold.")
+      .setHtmlDescription(
+        "An issue is created on a file as soon as the mutation coverage on this file is less than the required threshold. It gives the number of mutations to be covered in order to reach the required threshold.")
       .setName("Insufficient mutation coverage")
       .createParam(COVERAGE_RATIO_PARAM)
       .setDefaultValue("65")

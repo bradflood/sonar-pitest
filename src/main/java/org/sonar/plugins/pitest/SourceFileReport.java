@@ -30,117 +30,121 @@ import java.util.Map;
  * Mutants for a given java source file
  */
 public class SourceFileReport {
-	public final String sourceFileRelativePath;
-	private final List<Mutant> mutants = new ArrayList<>();
-	private int mutationsNoCoverage = 0;
-	private int mutationsKilled = 0;
-	private int mutationsSurvived = 0;
-	private int mutationsMemoryError = 0;
-	private int mutationsTimedOut = 0;
-	private int mutationsUnknown = 0;
-	private int mutationsDetected = 0;
+  public final String sourceFileRelativePath;
+  private final List<Mutant> mutants = new ArrayList<>();
+  private int mutationsNoCoverage = 0;
+  private int mutationsKilled = 0;
+  private int mutationsSurvived = 0;
+  private int mutationsMemoryError = 0;
+  private int mutationsTimedOut = 0;
+  private int mutationsUnknown = 0;
+  private int mutationsDetected = 0;
 
-	public SourceFileReport(String sourceFileRelativePath) {
-		this.sourceFileRelativePath = sourceFileRelativePath;
-	}
+  public SourceFileReport(String sourceFileRelativePath) {
+    this.sourceFileRelativePath = sourceFileRelativePath;
+  }
 
-	public String toJSON() {
-		if (mutants.isEmpty()) {
-			return null;
-		}
-		Map<Integer,List<String>> mutantsByLine = new HashMap<>();
+  public String toJSON() {
+    if (mutants.isEmpty()) {
+      return null;
+    }
+    Map<Integer, List<String>> mutantsByLine = new HashMap<>();
 
-		for (Mutant mutant : mutants) {
-			if(!mutantsByLine.containsKey(mutant.lineNumber)){
-				mutantsByLine.put(mutant.lineNumber, new ArrayList<String>());
-			}
-			mutantsByLine.get(mutant.lineNumber).add(mutant.toString());
-		}
+    for (Mutant mutant : mutants) {
+      if (!mutantsByLine.containsKey(mutant.lineNumber)) {
+        mutantsByLine.put(mutant.lineNumber, new ArrayList<String>());
+      }
+      mutantsByLine.get(mutant.lineNumber).add(mutant.toString());
+    }
 
-		StringBuilder builder = new StringBuilder();
-		builder.append("{");
-		boolean first = true;
-		for (int line : mutantsByLine.keySet()) {
-			if (!first) {
-				builder.append(",");
-			}
-			first = false;
-			builder.append("\"");
-			builder.append(line);
-			builder.append("\":[");
-			for(String mutant : mutantsByLine.get(line)) {
-				builder.append(mutant).append(',');
-			}
-			builder.deleteCharAt(builder.length()-1); //remove last ','
-			builder.append("]");
-		}
-		builder.append("}");
+    StringBuilder builder = new StringBuilder();
+    builder.append("{");
+    boolean first = true;
+    for (int line : mutantsByLine.keySet()) {
+      if (!first) {
+        builder.append(",");
+      }
+      first = false;
+      builder.append("\"");
+      builder.append(line);
+      builder.append("\":[");
+      for (String mutant : mutantsByLine.get(line)) {
+        builder.append(mutant).append(',');
+      }
+      builder.deleteCharAt(builder.length() - 1); // remove last ','
+      builder.append("]");
+    }
+    builder.append("}");
 
-		return builder.toString();
-	}
+    return builder.toString();
+  }
 
+  public void addMutant(Mutant mutant) {
+    if (!sourceFileRelativePath.equals(mutant.sourceRelativePath())) {
+      throw new IllegalArgumentException("Relative paths do not match: "
+        + sourceFileRelativePath
+        + " vs "
+        + mutant.sourceRelativePath());
+    }
+    mutants.add(mutant);
+    if (mutant.detected) {
+      mutationsDetected++;
+    }
+    switch (mutant.mutantStatus) {
+      case KILLED:
+        mutationsKilled++;
+        break;
+      case NO_COVERAGE:
+        mutationsNoCoverage++;
+        break;
+      case SURVIVED: // Only survived mutations are saved as violations
+        mutationsSurvived++;
+        break;
+      case MEMORY_ERROR:
+        mutationsMemoryError++;
+        break;
+      case TIMED_OUT:
+        mutationsTimedOut++;
+        break;
+      case UNKNOWN:
+        mutationsUnknown++;
+        break;
+    }
+  }
 
-	public void addMutant(Mutant mutant) {
-		if(!sourceFileRelativePath.equals(mutant.sourceRelativePath())){
-			throw new IllegalArgumentException("Relative paths do not match: "
-					                                   + sourceFileRelativePath
-					                                   + " vs "
-					                                   + mutant.sourceRelativePath());
-		}
-		mutants.add(mutant);
-		if (mutant.detected) {
-			mutationsDetected++;
-		}
-		switch (mutant.mutantStatus) {
-			case KILLED:
-				mutationsKilled++;
-				break;
-			case NO_COVERAGE:
-				mutationsNoCoverage++;
-				break;
-			case SURVIVED: // Only survived mutations are saved as violations
-				mutationsSurvived++;
-				break;
-			case MEMORY_ERROR:
-				mutationsMemoryError++;
-				break;
-			case TIMED_OUT:
-				mutationsTimedOut++;
-				break;
-			case UNKNOWN:
-				mutationsUnknown++;
-				break;
-		}
-	}
+  public Collection<Mutant> getMutants() {
+    return Collections.unmodifiableList(mutants);
+  }
 
-	public Collection<Mutant> getMutants() {
-		return Collections.unmodifiableList(mutants);
-	}
+  public int getMutationsTotal() {
+    return mutants.size();
+  }
 
-	public int getMutationsTotal() {
-		return mutants.size();
-	}
+  int getMutationsNoCoverage() {
+    return mutationsNoCoverage;
+  }
 
-	int getMutationsNoCoverage() {
-		return mutationsNoCoverage;
-	}
-	int getMutationsKilled() {
-		return mutationsKilled;
-	}
-	int getMutationsSurvived() {
-		return mutationsSurvived;
-	}
-	int getMutationsMemoryError() {
-		return mutationsMemoryError;
-	}
-	int getMutationsTimedOut() {
-		return mutationsTimedOut;
-	}
-	int getMutationsUnknown() {
-		return mutationsUnknown;
-	}
+  int getMutationsKilled() {
+    return mutationsKilled;
+  }
 
-	int getMutationsDetected() {
-		return mutationsDetected;
-	}
+  int getMutationsSurvived() {
+    return mutationsSurvived;
+  }
+
+  int getMutationsMemoryError() {
+    return mutationsMemoryError;
+  }
+
+  int getMutationsTimedOut() {
+    return mutationsTimedOut;
+  }
+
+  int getMutationsUnknown() {
+    return mutationsUnknown;
+  }
+
+  int getMutationsDetected() {
+    return mutationsDetected;
+  }
 }

@@ -24,12 +24,15 @@ package org.sonar.plugins.pitest;
  * 
  * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
+
+// remove this class once refactor is completed
 public final class PitestMetricsKeys {
 	
 	private PitestMetricsKeys() {
 		// Hide utility class constructor
 	}
 	
+	// 
 	public static final String MUTATIONS_DATA_KEY = "pitest_mutations_data";
 	public static final String MUTATIONS_TOTAL_KEY = "pitest_mutations_total";
 	public static final String MUTATIONS_DETECTED_KEY = "pitest_mutations_detected";

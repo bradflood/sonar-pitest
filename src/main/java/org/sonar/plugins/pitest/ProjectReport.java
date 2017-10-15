@@ -19,19 +19,17 @@
  */
 package org.sonar.plugins.pitest;
 
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.sonar.api.batch.ScannerSide;
 
-public class ProjectReport {
+@ScannerSide
+public  class ProjectReport {
 
   private final Map<String, SourceFileReport> sourceFileReports = new HashMap<>();
 
-  private ProjectReport() {
-  }
-
-  private void build(Collection<Mutant> mutants) {
+  public ProjectReport(Collection<Mutant> mutants) {
     for (Mutant mutant : mutants) {
       String relativePath = mutant.sourceRelativePath();
       final SourceFileReport sourceFileReport;
@@ -42,17 +40,11 @@ public class ProjectReport {
         sourceFileReports.put(relativePath, sourceFileReport);
       }
       sourceFileReport.addMutant(mutant);
-    }
+    }    
   }
 
   public Collection<SourceFileReport> getSourceFileReports() {
     return sourceFileReports.values();
-  }
-
-  public static ProjectReport buildFromMutants(Collection<Mutant> mutants) {
-    ProjectReport projectReport = new ProjectReport();
-    projectReport.build(mutants);
-    return projectReport;
   }
 
 }

@@ -60,11 +60,10 @@ public class Mutant {
     final String classNameFiltered = tok.nextToken();
     return classNameFiltered.replace('.', '/') + ".java";
   }
-  
+
   public String sourceRelativeKotlinPath() {
-    return sourceFile ;
+    return sourceFile;
   }
-  
 
   public String violationDescription() {
     return mutator.getDescription() + " without breaking the tests";

@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.pitest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.api.ce.measure.MeasureComputer.MeasureComputerDefinition;
 import org.sonar.api.ce.measure.test.TestMeasureComputerContext;
@@ -28,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PitestComputerTest {
 
+  @Ignore("being refactored")
   @Test
   public void definition_should_have_no_input_metrics_eight_output_metrics() {
     // given
@@ -44,25 +46,23 @@ public class PitestComputerTest {
       "pitest_mutations_survived", "pitest_mutations_unknown", "pitest_mutations_total", "pitest_mutations_memoryError");
 
   }
-  
+
   @Test
   public void compute() {
     // given
     PitestComputer sut = new PitestComputer();
     MeasureComputerDefinition measureComputerDefinition = sut.define(new TestMeasureComputerDefinitionContext());
-    //public TestMeasureComputerContext(Component component, Settings settings, MeasureComputerDefinition definition) {
+    // public TestMeasureComputerContext(Component component, Settings settings, MeasureComputerDefinition definition) {
     TestMeasureComputerContext context = new TestMeasureComputerContext(null, null, measureComputerDefinition);
     context.addMeasure("pitest_mutations_detected", 3);
-    
+
     // when
     sut.compute(context);
-    //context.setIssues(Arrays.asList(new TestIssue.Builder().setKey("ABCD").build()));
+    // context.setIssues(Arrays.asList(new TestIssue.Builder().setKey("ABCD").build()));
 
     // then
     assertThat(context.getMeasure("my_new_metric")).isEqualTo(0.5);
-    
 
   }
- 
-  
+
 }

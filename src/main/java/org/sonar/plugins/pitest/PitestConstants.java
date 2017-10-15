@@ -29,7 +29,8 @@ package org.sonar.plugins.pitest;
  */
 public final class PitestConstants {
 
-  private PitestConstants() { }
+  private PitestConstants() {
+  }
 
   public static final String REPOSITORY_KEY = "pitest";
   public static final String REPOSITORY_NAME = "Pitest";
@@ -49,6 +50,5 @@ public final class PitestConstants {
   public static final String REPORT_DIRECTORY_KEY = "sonar.pitest.reportsDirectory";
 
   public static final String REPORT_DIRECTORY_DEF = "target/pit-reports";
-
 
 }

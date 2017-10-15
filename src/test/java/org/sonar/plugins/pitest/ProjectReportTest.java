@@ -36,10 +36,7 @@ public class ProjectReportTest {
     Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Toto", 15, "key3", "com/foo/bar/Toto.java");
 
     // when
-    ProjectReport report
-      = ProjectReport.buildFromMutants(
-          Arrays.asList(m1, m2, m3)
-    );
+    ProjectReport report = new ProjectReport(Arrays.asList(m1, m2, m3));
 
     // then
     Collection<SourceFileReport> sourceFileReports = report.getSourceFileReports();

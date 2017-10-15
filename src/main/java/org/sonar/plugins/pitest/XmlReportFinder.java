@@ -32,10 +32,10 @@ import org.sonar.api.batch.ScannerSide;
 
 @ScannerSide
 @ExtensionPoint
-public class XmlReportFinder  {
+public class XmlReportFinder {
 
   public File findReport(File reportDirectory) {
-    if (reportDirectory== null || !reportDirectory.exists() || !reportDirectory.isDirectory()) {
+    if (reportDirectory == null || !reportDirectory.exists() || !reportDirectory.isDirectory()) {
       return null;
     }
     final AtomicReference<Path> latestReport = new AtomicReference<>();
@@ -50,12 +50,12 @@ public class XmlReportFinder  {
 
         @Override
         public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-          if(file.toFile().isFile()
-              && file.toString().endsWith(".xml")
-              && (latestReport.get() == null
-                  || Files.getLastModifiedTime(file).compareTo(Files.getLastModifiedTime(latestReport.get())) > 0)){
-              latestReport.set(file);
-            }
+          if (file.toFile().isFile()
+            && file.toString().endsWith(".xml")
+            && (latestReport.get() == null
+              || Files.getLastModifiedTime(file).compareTo(Files.getLastModifiedTime(latestReport.get())) > 0)) {
+            latestReport.set(file);
+          }
           return FileVisitResult.CONTINUE;
         }
 
@@ -74,7 +74,7 @@ public class XmlReportFinder  {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    if(latestReport.get() != null){
+    if (latestReport.get() != null) {
       return latestReport.get().toFile();
     }
     return null;

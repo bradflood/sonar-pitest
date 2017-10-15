@@ -32,20 +32,20 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.ExtensionPoint;
 import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 @ScannerSide
 @ExtensionPoint
 public class XmlReportParser {
 
-	private static final Logger LOG = LoggerFactory.getLogger(XmlReportParser.class);
+  private static final Logger LOG = Loggers.get(XmlReportParser.class);
 
-	public Collection<Mutant> parse(File report) {
+  public Collection<Mutant> parse(File report) {
     return new Parser().parse(report);
-	}
+  }
 
   private static class Parser {
 
@@ -63,7 +63,7 @@ public class XmlReportParser {
       XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 
       try (InputStream is = new FileInputStream(file);
-           InputStreamReader reader = new InputStreamReader(is, Charsets.UTF_8)) {
+        InputStreamReader reader = new InputStreamReader(is, Charsets.UTF_8)) {
         stream = xmlFactory.createXMLStreamReader(reader);
 
         while (stream.hasNext()) {
@@ -80,18 +80,18 @@ public class XmlReportParser {
       return mutants;
     }
 
-    private void parseStartElement()  {
+    private void parseStartElement() {
       String tagName = stream.getLocalName();
 
       if ("mutation".equals(tagName)) {
         handleMutationTag();
-      } else  if ("mutatedClass".equals(tagName)) {
+      } else if ("mutatedClass".equals(tagName)) {
         handleMutatedClassTag();
-      } else  if ("lineNumber".equals(tagName)) {
+      } else if ("lineNumber".equals(tagName)) {
         handleLineNumber();
-      }else  if ("sourceFile".equals(tagName)) {
+      } else if ("sourceFile".equals(tagName)) {
         handleSourceFile();
-      } else  if ("mutator".equals(tagName)) {
+      } else if ("mutator".equals(tagName)) {
         handleMutator();
       } else {
         LOG.debug("Ignoring tag {}", tagName);
@@ -113,7 +113,7 @@ public class XmlReportParser {
 
     private void handleSourceFile() {
       try {
-         sourceFile = stream.getElementText();
+        sourceFile = stream.getElementText();
       } catch (XMLStreamException e) {
         logException(e.getClass().getSimpleName(), "processing tag sourceFile");
       }
@@ -127,24 +127,23 @@ public class XmlReportParser {
       }
     }
 
-
-    
     private void handleMutator() {
       String mutator;
       try {
         mutator = stream.getElementText();
-        mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator, sourceFile));        
+        mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator, sourceFile));
       } catch (XMLStreamException e) {
         logException(e.getClass().getSimpleName(), "processing tag mutator");
       }
-      
+
     }
 
     private void logException(String exceptionName, String activity) {
       if (LOG.isDebugEnabled()) {
-        LOG.debug("caught %s %s.. ignoring ", exceptionName, activity );
+        LOG.debug("caught %s %s.. ignoring ", exceptionName, activity);
       }
     }
+
     private void closeXmlStream() {
       if (stream != null) {
         try {
@@ -164,7 +163,6 @@ public class XmlReportParser {
 
       return null;
     }
-
 
   }
 }
