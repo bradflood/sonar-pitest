@@ -65,7 +65,7 @@ enum Mutator {
     this.description = description;
   }
 
-  private String getKey() {
+  String getKey() {
     return key;
   }
 

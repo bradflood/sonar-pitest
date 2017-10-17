@@ -28,11 +28,13 @@ public class MutantTest {
 
   public static final String INLINE_CONSTANT_MUTATOR = "org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator";
   public static final String RETURN_VALS_MUTATOR = "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator";
+  public static final String CONSTRUCTOR_MUTATOR = Mutator.CONSTRUCTOR.getKey();
+
 
   @Test
   public void should_get_path_to_java_source_file() {
     // given
-    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR, "Bar.java");
+    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR);
     // when
     String path = mutant.sourceRelativePath();
     //then
@@ -58,4 +60,35 @@ public class MutantTest {
     //then
     assertThat(path).isEqualTo("com/foo/Bar.java");
   }
+  
+  @Test
+  public void verify_description() {
+    // given
+    Mutant mutant = new Mutant(true, MutantStatus.SURVIVED, "com.foo.Bar", 17, Mutator.CONSTRUCTOR.getKey(), "Bar.kt");
+    // when
+    String path = mutant.violationDescription();
+    //then
+    assertThat(path).isEqualTo("A constructor call has been removed without breaking the tests");
+  }
+  
+  @Test
+  public void verify_string_format_with_provided_source_file() {
+    // given
+    Mutant mutant = new Mutant(true, MutantStatus.SURVIVED, "com.foo.Bar", 17, Mutator.CONSTRUCTOR.getKey(), "Bar.kt");
+    // when
+    String string = mutant.toString();
+    //then
+    assertThat(string).isEqualTo("{ \"d\" : true, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.Bar\", \"mname\" : \"Constructor Calls Mutator\", \"mdesc\" : \"A constructor call has been removed\", \"sourceFile\" : \"Bar.kt\"  }");
+  }
+  
+  @Test
+  public void verify_string_format_with_derived_source_file() {
+    // given
+    Mutant mutant = new Mutant(true, MutantStatus.SURVIVED, "com.foo.Bar", 17, Mutator.CONSTRUCTOR.getKey());
+    // when
+    String string = mutant.toString();
+    //then
+    assertThat(string).isEqualTo("{ \"d\" : true, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.Bar\", \"mname\" : \"Constructor Calls Mutator\", \"mdesc\" : \"A constructor call has been removed\", \"sourceFile\" : \"com/foo/Bar.java\"  }");
+  }
+  
 }

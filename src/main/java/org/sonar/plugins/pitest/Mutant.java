@@ -44,35 +44,33 @@ public class Mutant {
     this.mutator = Mutator.parse(mutatorKey);
   }
 
-  public String sourceRelativePath() {
-    if (sourceFile != null) {
-      return sourceFile;
-    } else {
-      // the old version of pitest mutate only .java file and don't have a sourceFile
-      final StringTokenizer tok = new StringTokenizer(className, "$");
-      final String classNameFiltered = tok.nextToken();
-      return classNameFiltered.replace('.', '/') + ".java";
-    }
-  }
+  public Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, String mutatorKey) {
+    this.detected = detected;
+    this.mutantStatus = mutantStatus;
+    this.className = className;
 
-  public String sourceRelativeJavaPath() {
     final StringTokenizer tok = new StringTokenizer(className, "$");
     final String classNameFiltered = tok.nextToken();
-    return classNameFiltered.replace('.', '/') + ".java";
+    this.sourceFile = classNameFiltered.replace('.', '/') + ".java";
+    this.lineNumber = lineNumber;
+    this.mutator = Mutator.parse(mutatorKey);
   }
 
-  public String sourceRelativeKotlinPath() {
-    return sourceFile;
+  public String sourceRelativePath() {
+      return sourceFile;
+
   }
 
-  public String violationDescription() {
+   public String violationDescription() {
     return mutator.getDescription() + " without breaking the tests";
   }
 
   @Override
   public String toString() {
-    return "{ \"d\" : " + detected + ", \"s\" : \"" + mutantStatus + "\", \"c\" : \"" + className + "\", \"mname\" : \"" + mutator.getName() + "\", \"mdesc\" : \""
-      + mutator.getDescription() + "\", \"sourceFile\" : \"" + sourceFile + "\"  }";
+    StringBuilder builder = new StringBuilder("{ \"d\" : ");
+    builder.append(detected).append(", \"s\" : \"").append(mutantStatus).append("\", \"c\" : \"").append(className).append("\", \"mname\" : \"").append(mutator.getName())
+      .append("\", \"mdesc\" : \"").append(mutator.getDescription()).append("\", \"sourceFile\" : \"").append(sourceFile).append("\"  }");
+    return builder.toString();
   }
 
 }
