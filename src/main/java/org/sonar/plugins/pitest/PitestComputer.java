@@ -24,7 +24,7 @@ import org.sonar.api.ce.ComputeEngineSide;
 import org.sonar.api.ce.measure.MeasureComputer;
 
 /**
- * Computer that processes the aggregated quantitative metric for a component from all the quantitative metrics
+ * MeasureComputer that processes the aggregated quantitative metric for a component from all the quantitative metrics
  * of its children.
  *
  * @author <a href="mailto:gerald.muecke@devcon5.io">Gerald M&uuml;cke</a>
@@ -37,7 +37,6 @@ public class PitestComputer implements MeasureComputer {
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
 
     return defContext.newDefinitionBuilder()
-      // FIXME: add output metrics
       // .setOutputMetrics(getQuantitativeKeys().toArray(new String[0]))
       .build();
   }

@@ -18,40 +18,54 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.pitest;
-
+/**
+ * https://github.com/hcoles/pitest/blob/master/pitest/src/main/java/org/pitest/mutationtest/engine/gregor/config/Mutator.java
+   https://github.com/hcoles/pitest/tree/master/pitest/src/main/java/org/pitest/mutationtest/engine/gregor/mutators * 
+ * @author bwflood
+ *
+ */
 enum Mutator {
-  COND_BOUNDARY("org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator", "Conditionals Boundary Mutator",
-    "A relational operator has been replaced by a boundary counterpart"),
-  NEGATE_COND(
-    "org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator", "Negate Conditionals Mutator",
-    "A conditional expression has been negated"),
-  MATH("org.pitest.mutationtest.engine.gregor.mutators.MathMutator", "Math Mutator",
-    "A binary arithmetic operation has been replaced by another one"),
-  INCREMENTS(
-    "org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator", "Increments Mutator",
-    "A local variable increment/decrement has been replaced"),
   INVERT_NEGS(
     "org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator", "Invert Negatives Mutator",
     "A number has been replaced by its opposite"),
-  INLINE_CONS("org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator",
-    "Inline Constant Mutator", "An inline constant has been changed"),
   RETURN_VALS(
     "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", "Return Values Mutator",
     "The return value of a method call has been replaced"),
+  INLINE_CONS("org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator",
+    "Inline Constant Mutator", "An inline constant has been changed"),
+  MATH("org.pitest.mutationtest.engine.gregor.mutators.MathMutator", "Math Mutator",
+    "A binary arithmetic operation has been replaced by another one"),
   VOID_METHOD(
     "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", "Void Method Calls Mutator",
     "A method call has been removed"),
+  NEGATE_COND(
+    "org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator", "Negate Conditionals Mutator",
+    "A conditional expression has been negated"),
+  COND_BOUNDARY("org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator", "Conditionals Boundary Mutator",
+    "A relational operator has been replaced by a boundary counterpart"),
+  INCREMENTS(
+    "org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator", "Increments Mutator",
+    "A local variable increment/decrement has been replaced"),
+  EXP_REMOVE_INCREMENTS("org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveIncrementsMutator", "Experimental Remove Increments Mutator", "An increment operation was removed"),
   NON_VOID_METHOD("org.pitest.mutationtest.engine.gregor.mutators.NonVoidMethodCallMutator",
     "Non Void Method Calls Mutator", "A method call has been removed"),
   CONSTRUCTOR(
     "org.pitest.mutationtest.engine.gregor.mutators.ConstructorCallMutator", "Constructor Calls Mutator",
     "A constructor call has been removed"),
-  EXP_INLINE_CONS(
-    "org.pitest.mutationtest.engine.gregor.mutators.experimental.InlineConstantMutator", "Experimental Inline Constant Mutator",
-    "An inline constant has been changed"),
+  REMOVE_COND_EQ_IF("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator", "Remove Conditional Mutator", "A conditional statement has been removed - EQ IF"),
+  REMOVE_COND_EQ_ELSE("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator", "Remove Conditional Mutator", "A conditional statement has been removed - EQ ELSE"),
+  REMOVE_COND_ORD_IF("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator", "Remove Conditional Mutator", "A conditional statement has been removed - EQ ORD IF"),
+  REMOVE_COND_ORD_ELSE("org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator", "Remove Conditional Mutator", "A conditional statement has been removed - EQ ORD ELSE"),
   EXP_MEMBER_VAR(
     "org.pitest.mutationtest.engine.gregor.mutators.experimental.MemberVariableMutator", "Experimental Member Variable Mutator",
     "A member variable assignment has been replaced"),
+  EXP_SWITCH("org.pitest.mutationtest.engine.gregor.mutators.experimental.SwitchMutator", "Experimental Switch Mutator", "A switch label has been swapped with another"),
+  EXP_ARGUMENT_PROPAGATION("org.pitest.mutationtest.engine.gregor.mutators.ArgumentPropagationMutator", "Experimental Argument Propagation Mutator", "A method return value was replaced with a method parameter"),  
+  EXP_NAKED_RECEIVER("org.pitest.mutationtest.engine.gregor.mutators.experimental.NakedReceiverMutator", "Experimental Naked ReceiverMutator", "A method return value was replaced with receiver"),  
+  EXP_REMOVE_SWITCH("org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveSwitchMutator", "Experimental Remove Switch Mutator", "A switch statement was removed"),  
+  EXP_RETURN_VALS(
+    "org.pitest.mutationtest.engine.gregor.mutators.experimental.ReturnValuesMutator", "Experimental Return Values Mutator",
+    "The return value (possibly an object) of a method call has been replaced"),
 
   UNKNOWN("", "Unknown mutator", "An unknown mutator has been applied");
 
@@ -78,9 +92,7 @@ enum Mutator {
   }
 
   static Mutator parse(String mutatorKey) {
-    if (mutatorKey == null) {
-      return unknown();
-    }
+
     for (Mutator mutantStatus : Mutator.values()) {
       if (mutantStatus.getKey().equals(mutatorKey)) {
         return mutantStatus;

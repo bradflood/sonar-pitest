@@ -35,7 +35,7 @@ import org.sonar.api.batch.ScannerSide;
 public class XmlReportFinder {
 
   public File findReport(File reportDirectory) {
-    if (reportDirectory == null || !reportDirectory.exists() || !reportDirectory.isDirectory()) {
+    if (!reportDirectory.exists() || !reportDirectory.isDirectory()) {
       return null;
     }
     final AtomicReference<Path> latestReport = new AtomicReference<>();

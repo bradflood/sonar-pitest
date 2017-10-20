@@ -54,19 +54,20 @@ import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
 
 public class PitestSensorTest {
 
-  private PitestSensor sensor;
 
   /*
    * Test note: PitestSensor requires the presence of keys MODE_KEY and REPORT_DIRECTORY_KEY (reference: PitestSensor.describe.. onlyWhenConfiguration.
    * If I'm understanding the platform API correctly, the platform will not call the sensor if the keys are not present.
    */
 
+  
+  
   @Test
   public void should_describe_execution_conditions() throws Exception {
     // given
     SensorContextTester context = createContext(); 
     Configuration configuration = mockConfiguration();
-    sensor = new PitestSensor(configuration, mockXmlReportParserOnJavaFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(configuration, mockXmlReportParserOnJavaFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
 
     SensorDescriptor descriptor = spy(SensorDescriptor.class);
 
@@ -87,7 +88,7 @@ public class PitestSensorTest {
     Configuration configuration = mock(Configuration.class);
     when(configuration.get(MODE_KEY)).thenReturn(Optional.of(MODE_SKIP));
     SensorContextTester context = createContext();
-    sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(RulesProfile.class), mock(XmlReportFinder.class), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(RulesProfile.class), mock(XmlReportFinder.class), context.fileSystem());
     
     // when
     sensor.execute(context);
@@ -103,7 +104,7 @@ public class PitestSensorTest {
     when(configuration.get(MODE_KEY)).thenReturn(Optional.of(MODE_REUSE_REPORT));
     when(configuration.get(REPORT_DIRECTORY_KEY)).thenReturn(Optional.of("nonexistant-directory"));
     SensorContextTester context = createContext();
-    sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(RulesProfile.class), mock(XmlReportFinder.class), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(RulesProfile.class), mock(XmlReportFinder.class), context.fileSystem());
 
     // when
     sensor.execute(context);
@@ -116,7 +117,7 @@ public class PitestSensorTest {
   public void should_create_issue_for_survived_mutant_if_present() throws Exception {
     // given
     SensorContextTester context = createContext();    
-    sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
 
 
     // when
@@ -133,7 +134,7 @@ public class PitestSensorTest {
   public void should_create_issue_for_both_java_and_kotlin_sources() throws Exception {
     // given
     SensorContextTester context = createContext();    
-    sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnMixedFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnMixedFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
 
 
     // when
@@ -151,7 +152,7 @@ public class PitestSensorTest {
   public void should_not_create_issue_for_survived_mutant_if_present_but_rule_not_active() throws Exception {
     // given
     SensorContextTester context = createContext();    
-    sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
 
 
     // when
@@ -166,7 +167,7 @@ public class PitestSensorTest {
   public void should_create_issue_for_coverage_not_met() throws Exception {
     // given
     SensorContextTester context = createContext();    
-    sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, true), mockXmlReportFinder(), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, true), mockXmlReportFinder(), context.fileSystem());
 
 
     // when
@@ -186,7 +187,7 @@ public class PitestSensorTest {
     RulesProfile mockRulesProfile = mockRulesProfile(false, true);   
     ActiveRule mockCoverageRule = mockRulesProfile.getActiveRule(PitestConstants.REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
     when(mockCoverageRule.getParameter(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("10");
-    sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile, mockXmlReportFinder(), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile, mockXmlReportFinder(), context.fileSystem());
 
 
     // when
@@ -200,7 +201,7 @@ public class PitestSensorTest {
   public void should_not_create_issue_for_coverage_not_met_if_rule_not_active() throws Exception {
     // given
     SensorContextTester context = createContext();    
-    sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
 
 
     // when

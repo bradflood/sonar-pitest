@@ -71,8 +71,8 @@ public class XmlReportParser {
             parseStartElement();
           }
         }
-      } catch (IOException | XMLStreamException e) {
-        throw Throwables.propagate(e);
+      } catch (IOException | XMLStreamException | IllegalArgumentException e) {
+        throw new IllegalStateException("XML is not valid", e);
       } finally {
         closeXmlStream();
       }
@@ -106,7 +106,7 @@ public class XmlReportParser {
     private void handleMutatedClassTag() {
       try {
         mutatedClass = stream.getElementText();
-      } catch (XMLStreamException e) {
+      } catch (Exception e) {
         logException(e.getClass().getSimpleName(), "processing tag MutatedClass");
       }
     }
@@ -114,7 +114,7 @@ public class XmlReportParser {
     private void handleSourceFile() {
       try {
         sourceFile = stream.getElementText();
-      } catch (XMLStreamException e) {
+      } catch (Exception e) {
         logException(e.getClass().getSimpleName(), "processing tag sourceFile");
       }
     }
@@ -122,7 +122,7 @@ public class XmlReportParser {
     private void handleLineNumber() {
       try {
         lineNumber = Integer.parseInt(stream.getElementText().trim());
-      } catch (XMLStreamException e) {
+      } catch (Exception e) {
         logException(e.getClass().getSimpleName(), "processing tag lineNumber");
       }
     }
@@ -132,16 +132,14 @@ public class XmlReportParser {
       try {
         mutator = stream.getElementText();
         mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator, sourceFile));
-      } catch (XMLStreamException e) {
+      } catch (Exception e) {
         logException(e.getClass().getSimpleName(), "processing tag mutator");
       }
 
     }
 
     private void logException(String exceptionName, String activity) {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("caught %s %s.. ignoring ", exceptionName, activity);
-      }
+        LOG.warn("caught {} {}.. ignoring ", exceptionName, activity);
     }
 
     private void closeXmlStream() {

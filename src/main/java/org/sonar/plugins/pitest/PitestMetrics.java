@@ -34,35 +34,32 @@ import org.sonar.api.server.ServerSide;
 /**
  * Metrics for the sonar pitest plugin.
  * 
- * @author <a href="mailto:aquiporras@gmail.com">Jaime Porras L&oacute;pez</a>
  */
-@ScannerSide
-@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
-@ServerSide
-@ComputeEngineSide
-@ExtensionPoint
 public class PitestMetrics implements Metrics {
-
-  // cannot change type for METRICS until the SonarQube API changes
-  @SuppressWarnings("rawtypes")
-  private static final List<Metric> METRICS = new ArrayList<>();
-  private static final List<Metric<Serializable>> QUANTITATIVE_METRICS = new ArrayList<>();
 
   public static final String PITEST_DOMAIN = "Mutation analysis";
 
-  public static final String MUTATIONS_TOTAL_KEY = "pitest_mutations_total";
+  public static final String MUTATIONS_GENERATED_KEY = "pitest_mutations_total";
   public static final String MUTATIONS_DETECTED_KEY = "pitest_mutations_detected";
-  public static final String MUTATIONS_COVERAGE_KEY = "pitest_mutations_coverage";
+  public static final String MUTATIONS_COVERED_RATIO_KEY = "pitest_mutations_coverage";
 
   public static final String MUTATIONS_DATA_KEY = "pitest_mutations_data";
-  public static final String MUTATIONS_NO_COVERAGE_KEY = "pitest_mutations_noCoverage";
+  public static final String MUTATIONS_NOT_COVERED_KEY = "pitest_mutations_noCoverage";
   public static final String MUTATIONS_KILLED_KEY = "pitest_mutations_killed";
-  public static final String MUTATIONS_SURVIVED_KEY = "pitest_mutations_survived";
+  public static final String MUTATIONS_NOT_DETECTED_KEY = "pitest_mutations_survived";
   public static final String MUTATIONS_MEMORY_ERROR_KEY = "pitest_mutations_memoryError";
   public static final String MUTATIONS_TIMED_OUT_KEY = "pitest_mutations_timedOut";
   public static final String MUTATIONS_UNKNOWN_KEY = "pitest_mutations_unknown";
 
-  public static final Metric<Serializable> MUTATIONS_TOTAL = new Metric.Builder(MUTATIONS_TOTAL_KEY, "Total Mutations", Metric.ValueType.INT)
+  // how is this reported from pitest?
+  public static final Metric<Serializable> MUTATIONS_NOT_COVERED = new Metric.Builder(MUTATIONS_NOT_COVERED_KEY, "Non Covered Mutations", Metric.ValueType.INT)
+    .setDescription("Number of mutations not covered by any test.")
+    .setDirection(Metric.DIRECTION_WORST)
+    .setQualitative(false) 
+    .setDomain(PITEST_DOMAIN)
+    .create();
+  
+  public static final Metric<Serializable> MUTATIONS_GENERATED = new Metric.Builder(MUTATIONS_GENERATED_KEY, "Total Mutations", Metric.ValueType.INT)
     .setDescription("Total number of mutations generated")
     .setDirection(Metric.DIRECTION_BETTER)
     .setQualitative(false)
@@ -76,7 +73,23 @@ public class PitestMetrics implements Metrics {
     .setDomain(PITEST_DOMAIN)
     .create();
 
-  public static final Metric<Serializable> MUTATIONS_COVERAGE = new Metric.Builder(MUTATIONS_COVERAGE_KEY, "Mutations Coverage", Metric.ValueType.PERCENT)
+  public static final Metric<Serializable> MUTATIONS_NOT_DETECTED = new Metric.Builder(MUTATIONS_NOT_DETECTED_KEY, "Undetected Mutations", Metric.ValueType.INT)
+    .setDescription("Number of mutations covered by a test, but not detected by the test")
+    .setDirection(Metric.DIRECTION_WORST)
+    .setQualitative(false) 
+    .setDomain(PITEST_DOMAIN)
+    .create();
+  
+  // how is this reported from pitest?
+  public static final Metric<Serializable> MUTATIONS_DATA = new Metric.Builder(MUTATIONS_DATA_KEY, "Mutations Data", Metric.ValueType.DATA)
+    .setDescription("Mutations Data")
+    .setDirection(Metric.DIRECTION_NONE)
+    .setQualitative(true)
+    .setDomain(PITEST_DOMAIN)
+    .create();
+  
+  // should this be renamed to MUTATIONS_DETECTED_RATIO
+  public static final Metric<Serializable> MUTATIONS_COVERED_RATIO = new Metric.Builder(MUTATIONS_COVERED_RATIO_KEY, "Mutations Coverage Ratio", Metric.ValueType.PERCENT)
     .setDescription("Ratio of mutations found by tests")
     .setDirection(Metric.DIRECTION_BETTER)
     .setQualitative(true)
@@ -84,22 +97,28 @@ public class PitestMetrics implements Metrics {
     .setBestValue(100d)
     .setWorstValue(0d)
     .create();
+  
+  @Override
+  public List<Metric> getMetrics() {
+    return Arrays.asList(
+      MUTATIONS_NOT_COVERED, 
+      MUTATIONS_GENERATED,
+      MUTATIONS_DETECTED,
+      MUTATIONS_NOT_DETECTED,
+      MUTATIONS_DATA,
+      MUTATIONS_COVERED_RATIO
+      ) ;
+  }
 
-  // public static final Metric<Serializable> MUTATIONS_DATA = buildMetric(MUTATIONS_DATA_KEY, "Mutations Data", "Data of mutations",
-  // Metric.ValueType.DATA,
-  // Metric.DIRECTION_NONE, true, PITEST_DOMAIN);
-  //
-  // public static final Metric<Serializable> MUTATIONS_NO_COVERAGE = buildMetric(MUTATIONS_NO_COVERAGE_KEY, "Non Covered Mutations",
-  // "Number of mutations non covered by any test.",
-  // Metric.ValueType.INT, Metric.DIRECTION_WORST, false, PITEST_DOMAIN);
-  //
-  // public static final Metric<Serializable> MUTATIONS_KILLED = buildMetric(MUTATIONS_KILLED_KEY, "Killed Mutations", "Number of mutations
-  // killed by tests", Metric.ValueType.INT,
-  // Metric.DIRECTION_BETTER, false, PITEST_DOMAIN);
-  //
-  // public static final Metric<Serializable> MUTATIONS_SURVIVED = buildMetric(MUTATIONS_SURVIVED_KEY, "Survived Mutations", "Number of
-  // mutations survived.", Metric.ValueType.INT,
-  // Metric.DIRECTION_WORST, false, PITEST_DOMAIN);
+//  public static final Metric<Serializable> MUTATIONS_KILLED = new Metric.Builder(MUTATIONS_KILLED_KEY, "Killed Mutations", Metric.ValueType.INT)
+//    .setDescription("Number of mutations killed by a test.")
+//    .setDirection(Metric.DIRECTION_BETTER)
+//    .setQualitative(false) 
+//    .setDomain(PITEST_DOMAIN)
+//    .create();
+
+
+
   //
   // public static final Metric<Serializable> MUTATIONS_MEMORY_ERROR = buildMetric(MUTATIONS_MEMORY_ERROR_KEY, "Memory Error Mutations",
   // "Number of mutations detected by memory errors.",
@@ -145,18 +164,6 @@ public class PitestMetrics implements Metrics {
   // builder.setDomain(domain);
   // return builder;
   // }
-
-  /**
-   * @see Metrics#getMetrics()
-   */
-  @SuppressWarnings("rawtypes")
-  @Override
-  public List<Metric> getMetrics() {
-    return Arrays.asList(
-      MUTATIONS_TOTAL,
-      MUTATIONS_DETECTED,
-      MUTATIONS_COVERAGE);
-  }
 
   /**
    * Returns the pitest quantitative metrics list.

@@ -138,7 +138,7 @@ public class PitestSensor implements Sensor {
       int detected = sourceFileReport.getMutationsDetected();
       int total = sourceFileReport.getMutationsTotal();
 
-      saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_TOTAL, total);
+      saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_GENERATED, total);
       saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_DETECTED, detected);
       // FIXME: add these back in incrementally
       // saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_NO_COVERAGE, sourceFileReport.getMutationsNoCoverage());

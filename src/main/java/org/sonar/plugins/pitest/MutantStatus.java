@@ -23,9 +23,6 @@ public enum MutantStatus {
   NO_COVERAGE, KILLED, SURVIVED, MEMORY_ERROR, TIMED_OUT, UNKNOWN;
 
   public static MutantStatus parse(String statusName) {
-    if (statusName == null) {
-      return UNKNOWN;
-    }
     for (MutantStatus mutantStatus : MutantStatus.values()) {
       if (mutantStatus.name().equals(statusName)) {
         return mutantStatus;

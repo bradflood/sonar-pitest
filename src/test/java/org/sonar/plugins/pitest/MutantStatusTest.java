@@ -19,53 +19,52 @@
  */
 package org.sonar.plugins.pitest;
 
-import com.google.common.io.Resources;
-import java.io.File;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class XmlReportFinderTest {
-
-  @Ignore("flawed logic - replace")
+public class MutantStatusTest {
+  
   @Test
-  public void should_find_report_file() {
+  public void parse_upper_case_KILLED_succeeds() {
     // given
-    XmlReportFinder finder = new XmlReportFinder();
-    File xmlFile = new File(Resources.getResource("mutations.xml").getFile());
-    File directory = xmlFile.getParentFile();
-
-    // when
-    File report = finder.findReport(directory);
-
-    // then
-    assertThat(report).isEqualTo(xmlFile);
-  }
-
-  @Test
-  public void should_return_null_if_no_report() {
-    // given
-    XmlReportFinder finder = new XmlReportFinder();
-    File directory = new File(Resources.getResource("fake_libs").getFile());
-
-    // when
-    File report = finder.findReport(directory);
-
-    // then
-    assertThat(report).isNull();
-  }
-
-  @Test
-  public void should_return_null_if_directory_does_not_exist() {
-    // given
-    XmlReportFinder finder = new XmlReportFinder();
-    File directory = new File("imaginary");
     
     // when
-    File report = finder.findReport(directory);
-
-    // then
-    assertThat(report).isNull();
+    MutantStatus status =  MutantStatus.parse("KILLED");
+    
+    //then
+    assertThat(status).isEqualTo(MutantStatus.KILLED);
+  }
+  
+  @Test
+  public void parse_lower_case_killed_returns_unknown() {
+    // given
+    
+    // when
+    MutantStatus status =  MutantStatus.parse("killed");
+    
+    //then
+    assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
+  }
+  
+  @Test
+  public void parse_empty_string_returns_unknown() {
+    // given
+    
+    // when
+    MutantStatus status =  MutantStatus.parse("");
+    
+    //then
+    assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
+  }
+  @Test
+  public void parse_null_returns_unknown() {
+    // given
+    
+    // when
+    MutantStatus status =  MutantStatus.parse(null);
+    
+    //then
+    assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
   }
 }
