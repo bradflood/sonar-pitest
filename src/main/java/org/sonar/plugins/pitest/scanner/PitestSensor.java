@@ -91,10 +91,10 @@ public class PitestSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     // TODO: I believe this is no longer needed since we are now providing more details in the SensorDescriptor. verify
-//    if (!fileSystem.hasFiles(fileSystemExecutionPredicate)) {
-//      LOGGER.debug("file system execution predicate not satisfied {}. returning", fileSystemExecutionPredicate);
-//      return;
-//    }
+    // if (!fileSystem.hasFiles(fileSystemExecutionPredicate)) {
+    // LOGGER.debug("file system execution predicate not satisfied {}. returning", fileSystemExecutionPredicate);
+    // return;
+    // }
 
     if (MODE_SKIP.equals(executionMode)) {
       LOGGER.debug("executionMode is skip. returning");
@@ -143,7 +143,7 @@ public class PitestSensor implements Sensor {
       }
 
       // int detected = sourceFileReport.getMutationsDetected();
-//      int total = sourceFileReport.getMutationsTotal();
+      // int total = sourceFileReport.getMutationsTotal();
 
       saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_GENERATED, sourceFileReport.getMutationsTotal());
       // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_DETECTED, detected);

@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.pitest;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.api.ce.measure.MeasureComputer.MeasureComputerDefinition;
 import org.sonar.api.ce.measure.test.TestMeasureComputerContext;
@@ -29,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PitestComputerTest {
 
-  @Ignore("under investigation")
   @Test
   public void definition_should_have_no_input_metrics_eight_output_metrics() {
     // given
@@ -42,27 +40,40 @@ public class PitestComputerTest {
     // then
     assertThat(def).isNotNull();
     assertThat(def.getInputMetrics()).isEmpty();
-    assertThat(def.getOutputMetrics()).containsOnly("pitest_mutations_detected", "pitest_mutations_timedOut", "pitest_mutations_noCoverage", "pitest_mutations_killed",
-      "pitest_mutations_survived", "pitest_mutations_unknown", "pitest_mutations_total", "pitest_mutations_memoryError");
+    assertThat(def.getOutputMetrics()).containsOnly("pitest_mutations_noCoverage", "pitest_mutations_total", "pitest_mutations_killed", "pitest_mutations_survived",
+      "pitest_mutations_error", "pitest_mutations_unknown", "pitest_mutations_data", "pitest_mutations_killed_percent");
 
   }
 
-  @Ignore("under investigation")
   @Test
-  public void compute() {
+  public void top_level_measures_are_preserved() {
     // given
     PitestComputer sut = new PitestComputer();
     MeasureComputerDefinition measureComputerDefinition = sut.define(new TestMeasureComputerDefinitionContext());
-    // public TestMeasureComputerContext(Component component, Settings settings, MeasureComputerDefinition definition) {
     TestMeasureComputerContext context = new TestMeasureComputerContext(null, null, measureComputerDefinition);
-    context.addMeasure("pitest_mutations_detected", 3);
+    context.addMeasure("pitest_mutations_killed", 3);
 
     // when
     sut.compute(context);
-    // context.setIssues(Arrays.asList(new TestIssue.Builder().setKey("ABCD").build()));
 
     // then
-    assertThat(context.getMeasure("my_new_metric")).isEqualTo(0.5);
+    assertThat(context.getMeasure("pitest_mutations_killed").getIntValue()).isEqualTo(3);
+
+  }
+
+  @Test
+  public void children_measures_are_calculated() {
+    // given
+    PitestComputer sut = new PitestComputer();
+    MeasureComputerDefinition measureComputerDefinition = sut.define(new TestMeasureComputerDefinitionContext());
+    TestMeasureComputerContext context = new TestMeasureComputerContext(null, null, measureComputerDefinition);
+    context.addChildrenMeasures("pitest_mutations_killed", 3, 5, 7, 9);
+
+    // when
+    sut.compute(context);
+
+    // then
+    assertThat(context.getMeasure("pitest_mutations_killed").getIntValue()).isEqualTo(24);
 
   }
 

@@ -29,12 +29,16 @@ import org.sonar.api.ce.measure.MeasureComputer;
  */
 public class PitestCoverageComputer implements MeasureComputer {
 
+  private static final String[] metricKeys = {
+    PitestMetrics.MUTATIONS_GENERATED_KEY,
+    PitestMetrics.MUTATIONS_KILLED_KEY,
+    PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY};
+
   @Override
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
 
     return defContext.newDefinitionBuilder()
-      .setInputMetrics(PitestMetrics.MUTATIONS_GENERATED_KEY, PitestMetrics.MUTATIONS_KILLED_KEY)
-      .setOutputMetrics(PitestMetrics.MUTATIONS_COVERED_RATIO_KEY)
+      .setOutputMetrics(metricKeys)
       .build();
   }
 
@@ -47,7 +51,7 @@ public class PitestCoverageComputer implements MeasureComputer {
       if (elements > 0 && killed != null) {
         final Integer coveredElements = killed.getIntValue();
         final Double coverage = 100.0 * coveredElements / elements;
-        context.addMeasure(PitestMetrics.MUTATIONS_COVERED_RATIO_KEY, coverage);
+        context.addMeasure(PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY, coverage);
       }
     }
   }

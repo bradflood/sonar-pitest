@@ -29,19 +29,19 @@ import java.util.List;
  * OTHER is used for TIMED_OUT, NON_VIABLE, MEMORY_ERROR, RUN_ERROR, as these have less to say about Test Quality
  */
 public enum MutantStatus {
-  NO_COVERAGE ("NO_COVERAGE"),
-  KILLED("KILLED"), 
-  SURVIVED("SURVIVED"), 
-  OTHER("TIMED_OUT", "NON_VIABLE", "MEMORY_ERROR", "RUN_ERROR"), 
+  NO_COVERAGE("NO_COVERAGE"),
+  KILLED("KILLED"),
+  SURVIVED("SURVIVED"),
+  OTHER("TIMED_OUT", "NON_VIABLE", "MEMORY_ERROR", "RUN_ERROR"),
   UNKNOWN;
-  
-  private final List<String> pitestDetectionStatus ;
+
+  private final List<String> pitestDetectionStatus;
 
   MutantStatus(final String... pitestDetectionStatus) {
     this.pitestDetectionStatus = Arrays.asList(pitestDetectionStatus);
-    
+
   }
-  
+
   public static MutantStatus fromPitestDetectionStatus(String pitestDetectionStatus) {
     for (MutantStatus mutantStatus : MutantStatus.values()) {
       if (mutantStatus.pitestDetectionStatus.contains(pitestDetectionStatus)) {
@@ -50,7 +50,7 @@ public enum MutantStatus {
     }
     return UNKNOWN;
   }
-  
+
   public static MutantStatus parse(String statusName) {
     for (MutantStatus mutantStatus : MutantStatus.values()) {
       if (mutantStatus.name().equals(statusName)) {

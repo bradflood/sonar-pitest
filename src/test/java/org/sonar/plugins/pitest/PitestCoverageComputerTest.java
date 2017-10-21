@@ -41,14 +41,13 @@ public class PitestCoverageComputerTest {
 
     MeasureComputerDefinition def = coverageComputer.define(defContext);
     assertThat(def).isNotNull();
-    assertThat(def.getInputMetrics()).containsOnly(PitestMetrics.MUTATIONS_GENERATED_KEY, PitestMetrics.MUTATIONS_KILLED_KEY);
-    assertThat(def.getOutputMetrics()).containsOnly(PitestMetrics.MUTATIONS_COVERED_RATIO_KEY);
+    assertThat(def.getInputMetrics()).containsOnly();
+    assertThat(def.getOutputMetrics()).containsOnly("pitest_mutations_total", "pitest_mutations_killed", "pitest_mutations_killed_percent");
 
   }
 
-  @Ignore("WIP")
   @Test
-  public void calculateCoverageRatio() {
+  public void calculateCoveragePercent() {
     // given
     PitestCoverageComputer coverageComputer = new PitestCoverageComputer();
     TestMeasureComputerDefinitionContext defContext = new TestMeasureComputerDefinitionContext();
@@ -56,13 +55,11 @@ public class PitestCoverageComputerTest {
     context.addMeasure(PitestMetrics.MUTATIONS_GENERATED_KEY, 10);
     context.addMeasure(PitestMetrics.MUTATIONS_KILLED_KEY, 2);
 
-    context.setIssues(Arrays.asList(new TestIssue.Builder().setKey("ABCD").build()));
-
     // when
     coverageComputer.compute(context);
 
     // then
-    assertThat(context.getMeasure(PitestMetrics.MUTATIONS_COVERED_RATIO_KEY)).isEqualTo(0.2);    
+    assertThat(context.getMeasure(PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY).getDoubleValue()).isEqualTo(20);    
 
   }
 

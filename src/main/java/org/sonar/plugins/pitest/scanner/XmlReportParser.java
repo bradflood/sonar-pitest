@@ -102,7 +102,7 @@ public class XmlReportParser {
 
     private void handleMutationTag() {
       detected = Boolean.parseBoolean(getAttribute("detected"));
-      //mutantStatus = MutantStatus.parse(getAttribute("status"));
+      // mutantStatus = MutantStatus.parse(getAttribute("status"));
       mutantStatus = MutantStatus.fromPitestDetectionStatus(getAttribute("status"));
     }
 
@@ -142,7 +142,7 @@ public class XmlReportParser {
     }
 
     private void logException(String exceptionName, String activity) {
-        LOG.warn("caught {} {}.. ignoring ", exceptionName, activity);
+      LOG.warn("caught {} {}.. ignoring ", exceptionName, activity);
     }
 
     private void closeXmlStream() {

@@ -21,7 +21,6 @@ package org.sonar.plugins.pitest.scanner;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -35,18 +34,13 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
-import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.measures.Metric;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.plugins.pitest.PitestConstants;
 import org.sonar.plugins.pitest.domain.Mutant;
 import org.sonar.plugins.pitest.domain.MutantStatus;
-import org.sonar.plugins.pitest.scanner.PitestSensor;
-import org.sonar.plugins.pitest.scanner.XmlReportFinder;
-import org.sonar.plugins.pitest.scanner.XmlReportParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

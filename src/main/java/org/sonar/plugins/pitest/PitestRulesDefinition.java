@@ -31,7 +31,7 @@ import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_NAME;
 import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
 
 public class PitestRulesDefinition implements RulesDefinition {
-  
+
   public static final String TAG_TEST_QUALITY = "test-quality";
   public static final String TAG_TEST_COVERAGE = "test-coverage";
 
@@ -43,7 +43,7 @@ public class PitestRulesDefinition implements RulesDefinition {
 
     /*
      * Rule: Survived Mutant
-     * Current thinking is that a survived mutant is at least as severe as missing code coverage, probably more severe. 
+     * Current thinking is that a survived mutant is at least as severe as missing code coverage, probably more severe.
      * Reason for more severe: a test covers this code, so there may be a false sense of security regarding test coverage
      */
     repository.createRule(SURVIVED_MUTANT_RULE_KEY)
@@ -60,7 +60,7 @@ public class PitestRulesDefinition implements RulesDefinition {
      * Rule: Insufficient Mutation coverage
      */
     NewRule insufficientMutationCoverageRule = repository.createRule(INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)
-    .setName("Insufficient mutation coverage")
+      .setName("Insufficient mutation coverage")
       .setHtmlDescription(
         "An issue is created on a file as soon as the mutation coverage on this file is less than the required threshold. It gives the number of mutations to be covered in order to reach the required threshold.")
       .setStatus(RuleStatus.READY)
@@ -68,12 +68,11 @@ public class PitestRulesDefinition implements RulesDefinition {
       .setType(RuleType.BUG)
       .setTags(TAG_TEST_QUALITY, TAG_TEST_COVERAGE)
       .setActivatedByDefault(true);
-      
+
     insufficientMutationCoverageRule
       .createParam(COVERAGE_RATIO_PARAM)
       .setDefaultValue("65")
       .setDescription("The minimum required mutation coverage ratio");
-    
 
     repository.done();
   }

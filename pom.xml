@@ -81,8 +81,8 @@
 		<!-- eat your own dog food -->
 		<sonar.pitest.mode>active</sonar.pitest.mode>
 		<sonar.junit.reportsPath>target/surefire-reports</sonar.junit.reportsPath>
-		
-		<!--  license -->
+
+		<!-- license -->
 		<license.owner>${project.organization.name}</license.owner>
 		<license.title>Sonar Pitest Plugin</license.title>
 		<license.years>2009-2017</license.years>
@@ -133,7 +133,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!--  FIXME: analyze need and consider removing -->
+				<!-- FIXME: analyze need and consider removing -->
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<testNGArtifactName>none:none</testNGArtifactName>

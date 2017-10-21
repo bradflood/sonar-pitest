@@ -26,7 +26,7 @@ import org.sonar.api.batch.ScannerSide;
 import org.sonar.plugins.pitest.domain.Mutant;
 
 @ScannerSide
-public  class ProjectReport {
+public class ProjectReport {
 
   private final Map<String, SourceFileReport> sourceFileReports = new HashMap<>();
 
@@ -41,7 +41,7 @@ public  class ProjectReport {
         sourceFileReports.put(relativePath, sourceFileReport);
       }
       sourceFileReport.addMutant(mutant);
-    }    
+    }
   }
 
   public Collection<SourceFileReport> getSourceFileReports() {

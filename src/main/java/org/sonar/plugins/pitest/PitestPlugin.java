@@ -21,7 +21,6 @@ package org.sonar.plugins.pitest;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.Plugin;
-import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.plugins.pitest.scanner.PitestSensor;

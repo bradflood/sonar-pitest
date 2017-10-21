@@ -36,10 +36,10 @@ public class SourceFileReport {
   private int mutationsNoCoverage = 0;
   private int mutationsKilled = 0;
   private int mutationsSurvived = 0;
-//  private int mutationsMemoryError = 0;
-//  private int mutationsTimedOut = 0;
+  // private int mutationsMemoryError = 0;
+  // private int mutationsTimedOut = 0;
   private int mutationsUnknown = 0;
-//  private int mutationsDetected = 0;
+  // private int mutationsDetected = 0;
 
   public SourceFileReport(String sourceFileRelativePath) {
     this.sourceFileRelativePath = sourceFileRelativePath;
@@ -88,9 +88,9 @@ public class SourceFileReport {
         + mutant.sourceRelativePath());
     }
     mutants.add(mutant);
-//    if (mutant.detected) {
-//      mutationsDetected++;
-//    }
+    // if (mutant.detected) {
+    // mutationsDetected++;
+    // }
     switch (mutant.mutantStatus) {
       case KILLED:
         mutationsKilled++;
@@ -127,19 +127,19 @@ public class SourceFileReport {
     return mutationsSurvived;
   }
 
-//  int getMutationsMemoryError() {
-//    return mutationsMemoryError;
-//  }
+  // int getMutationsMemoryError() {
+  // return mutationsMemoryError;
+  // }
 
-//  int getMutationsTimedOut() {
-//    return mutationsTimedOut;
-//  }
+  // int getMutationsTimedOut() {
+  // return mutationsTimedOut;
+  // }
 
   int getMutationsUnknown() {
     return mutationsUnknown;
   }
 
-//  int getMutationsDetected() {
-//    return mutationsDetected;
-//  }
+  // int getMutationsDetected() {
+  // return mutationsDetected;
+  // }
 }

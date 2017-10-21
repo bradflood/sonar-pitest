@@ -57,11 +57,11 @@ public class Mutant {
   }
 
   public String sourceRelativePath() {
-      return sourceFile;
+    return sourceFile;
 
   }
 
-   public String violationDescription() {
+  public String violationDescription() {
     return mutator.getDescription() + " without breaking the tests";
   }
 

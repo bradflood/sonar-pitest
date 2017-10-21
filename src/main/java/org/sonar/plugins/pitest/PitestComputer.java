@@ -21,6 +21,7 @@ package org.sonar.plugins.pitest;
 
 import org.sonar.api.ExtensionPoint;
 import org.sonar.api.ce.ComputeEngineSide;
+import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer;
 
 /**
@@ -33,35 +34,40 @@ import org.sonar.api.ce.measure.MeasureComputer;
 @ExtensionPoint
 public class PitestComputer implements MeasureComputer {
 
+  private static final String[] metricKeys = {PitestMetrics.MUTATIONS_NOT_COVERED_KEY,
+    PitestMetrics.MUTATIONS_GENERATED_KEY,
+    PitestMetrics.MUTATIONS_KILLED_KEY,
+    PitestMetrics.MUTATIONS_SURVIVED_KEY,
+    PitestMetrics.MUTATIONS_ERROR_KEY,
+    PitestMetrics.MUTATIONS_UNKNOWN_KEY,
+    PitestMetrics.MUTATIONS_DATA_KEY,
+    PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY};
+
   @Override
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
-
     return defContext.newDefinitionBuilder()
-      // .setOutputMetrics(getQuantitativeKeys().toArray(new String[0]))
+      .setOutputMetrics(metricKeys)
       .build();
   }
 
   @Override
   public void compute(final MeasureComputerContext context) {
-    // FIXME: refactor
-    // for (String metricKey : getQuantitativeKeys()) {
-    // if (context.getMeasure(metricKey) == null) {
-    // Integer sum = 0;
-    // for (Measure m : context.getChildrenMeasures(metricKey)) {
-    // sum += m.getIntValue();
-    // }
-    // if (sum > 0) {
-    // context.addMeasure(metricKey, sum);
-    // }
-    // }
-    // }
+    for (String metricKey : metricKeys) {
+      if (context.getMeasure(metricKey) == null) {
+        Integer sum = compute(context, metricKey);
+        if (sum > 0) {
+          context.addMeasure(metricKey, sum);
+        }
+      }
+    }
   }
 
-  // public List<String> getQuantitativeKeys() {
-  // final List<String> result = new ArrayList<>();
-  // for (Metric<Serializable> m : PitestMetrics.getQuantitativeMetrics()) {
-  // result.add(m.getKey());
-  // }
-  // return result;
-  // }
+  private Integer compute(final MeasureComputerContext context, String metricKey) {
+    Integer sum = 0;
+    for (Measure m : context.getChildrenMeasures(metricKey)) {
+      sum += m.getIntValue();
+    }
+    return sum;
+  }
+
 }
