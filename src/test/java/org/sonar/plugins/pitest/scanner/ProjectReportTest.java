@@ -19,14 +19,11 @@
  */
 package org.sonar.plugins.pitest.scanner;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
 import org.sonar.plugins.pitest.domain.Mutant;
 import org.sonar.plugins.pitest.domain.MutantStatus;
-import org.sonar.plugins.pitest.scanner.ProjectReport;
-import org.sonar.plugins.pitest.scanner.SourceFileReport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,8 +46,7 @@ public class ProjectReportTest {
       .usingElementComparatorOnFields("sourceFileRelativePath")
       .containsOnly(
         new SourceFileReport("com/foo/bar/Toto.java"),
-        new SourceFileReport("com/foo/bar/qix/Tata.java")
-      );
+        new SourceFileReport("com/foo/bar/qix/Tata.java"));
 
   }
 }

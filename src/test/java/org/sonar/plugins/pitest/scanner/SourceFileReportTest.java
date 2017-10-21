@@ -22,7 +22,6 @@ package org.sonar.plugins.pitest.scanner;
 import org.junit.Test;
 import org.sonar.plugins.pitest.domain.Mutant;
 import org.sonar.plugins.pitest.domain.MutantStatus;
-import org.sonar.plugins.pitest.scanner.SourceFileReport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,11 +45,14 @@ public class SourceFileReportTest {
     String result = fileMutants.toJSON();
     assertThat(result)
       .isEqualTo("{\"17\":[" +
-        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }," +
-        "{ \"d\" : false, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Return Values Mutator\", \"mdesc\" : \"The return value of a method call has been replaced\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }" +
+        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  },"
+        +
+        "{ \"d\" : false, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Return Values Mutator\", \"mdesc\" : \"The return value of a method call has been replaced\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }"
+        +
         "]," +
         "\"42\":[" +
-        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }" +
+        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }"
+        +
         "]}");
   }
 
@@ -79,11 +81,11 @@ public class SourceFileReportTest {
 
     // then
     assertThat(sourceFileReport.getMutationsTotal()).isEqualTo(3);
-//    assertThat(sourceFileReport.getMutationsDetected()).isEqualTo(2);
+    // assertThat(sourceFileReport.getMutationsDetected()).isEqualTo(2);
     assertThat(sourceFileReport.getMutationsKilled()).isEqualTo(2);
-//    assertThat(sourceFileReport.getMutationsMemoryError()).isEqualTo(0);
+    // assertThat(sourceFileReport.getMutationsMemoryError()).isEqualTo(0);
     assertThat(sourceFileReport.getMutationsNoCoverage()).isEqualTo(0);
-//    assertThat(sourceFileReport.getMutationsTimedOut()).isEqualTo(0);
+    // assertThat(sourceFileReport.getMutationsTimedOut()).isEqualTo(0);
     assertThat(sourceFileReport.getMutationsUnknown()).isEqualTo(0);
 
   }

@@ -24,9 +24,9 @@ import java.util.List;
 
 /*
  * Note: this is an incomplete list of DetectionStatus values.
- * https://github.com/hcoles/pitest/blob/master/pitest/src/main/java/org/pitest/mutationtest/DetectionStatus.java
+ * The complete list is here: https://github.com/hcoles/pitest/blob/master/pitest/src/main/java/org/pitest/mutationtest/DetectionStatus.java
  * 
- * OTHER is used for TIMED_OUT, NON_VIABLE, MEMORY_ERROR, RUN_ERROR, as these have less to say about Test Quality
+ * OTHER is used for TIMED_OUT, NON_VIABLE, MEMORY_ERROR, RUN_ERROR, as these have less to say about Test Quality, more indicative of problems with the test fixture
  */
 public enum MutantStatus {
   NO_COVERAGE("NO_COVERAGE"),

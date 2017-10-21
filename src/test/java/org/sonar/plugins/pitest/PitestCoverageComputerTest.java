@@ -19,13 +19,10 @@
  */
 package org.sonar.plugins.pitest;
 
-import java.util.Arrays;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.api.ce.measure.Component;
 import org.sonar.api.ce.measure.MeasureComputer.MeasureComputerDefinition;
 import org.sonar.api.ce.measure.Settings;
-import org.sonar.api.ce.measure.test.TestIssue;
 import org.sonar.api.ce.measure.test.TestMeasureComputerContext;
 import org.sonar.api.ce.measure.test.TestMeasureComputerDefinitionContext;
 
@@ -59,10 +56,8 @@ public class PitestCoverageComputerTest {
     coverageComputer.compute(context);
 
     // then
-    assertThat(context.getMeasure(PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY).getDoubleValue()).isEqualTo(20);    
+    assertThat(context.getMeasure(PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY).getDoubleValue()).isEqualTo(20);
 
   }
-
-
 
 }

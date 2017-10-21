@@ -20,7 +20,6 @@
 package org.sonar.plugins.pitest.domain;
 
 import org.junit.Test;
-import org.sonar.plugins.pitest.domain.MutantStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,47 +29,47 @@ public class MutantStatusTest {
    */
   @Test
   public void other_is_returned_for_timed_out() {
-    MutantStatus status =   MutantStatus.fromPitestDetectionStatus("TIMED_OUT");
+    MutantStatus status = MutantStatus.fromPitestDetectionStatus("TIMED_OUT");
     assertThat(status).isEqualTo(MutantStatus.OTHER);
   }
-  
+
   @Test
   public void other_is_returned_for_memory_error() {
-    MutantStatus status =   MutantStatus.fromPitestDetectionStatus("MEMORY_ERROR");
+    MutantStatus status = MutantStatus.fromPitestDetectionStatus("MEMORY_ERROR");
     assertThat(status).isEqualTo(MutantStatus.OTHER);
   }
 
   @Test
   public void killed_is_created_correctly() {
-    MutantStatus status =   MutantStatus.fromPitestDetectionStatus("KILLED");
+    MutantStatus status = MutantStatus.fromPitestDetectionStatus("KILLED");
     assertThat(status).isEqualTo(MutantStatus.KILLED);
   }
+
   /*
    * parse
    */
   @Test
   public void parse_upper_case_KILLED_succeeds() {
-    MutantStatus status =  MutantStatus.parse("KILLED");
+    MutantStatus status = MutantStatus.parse("KILLED");
     assertThat(status).isEqualTo(MutantStatus.KILLED);
   }
-  
+
   @Test
   public void parse_lower_case_killed_returns_unknown() {
-    MutantStatus status =  MutantStatus.parse("killed");
+    MutantStatus status = MutantStatus.parse("killed");
     assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
   }
-  
+
   @Test
   public void parse_empty_string_returns_unknown() {
-    MutantStatus status =  MutantStatus.parse("");
+    MutantStatus status = MutantStatus.parse("");
     assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
   }
-  
+
   @Test
   public void parse_null_returns_unknown() {
-    MutantStatus status =  MutantStatus.parse(null);
+    MutantStatus status = MutantStatus.parse(null);
     assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
   }
-  
 
 }

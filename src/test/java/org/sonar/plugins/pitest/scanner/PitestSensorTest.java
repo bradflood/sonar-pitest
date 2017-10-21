@@ -160,21 +160,22 @@ public class PitestSensorTest {
     assertThat(context.allIssues()).isEmpty();
 
   }
-  
-//  // FIXME: investigate API requirement here
-//  @Test
-//  public void should_create_measure_if_no_rules_active() throws Exception {
-//    // given
-//    SensorContextTester context = createContext();
-//    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
-//
-//    // when
-//    sensor.execute(context);
-//
-//    // then
-//    //assertThat(context.measure(componentKey, metric)
-//
-//  }
+
+  // // FIXME: investigate API requirement here
+  // @Test
+  // public void should_create_measure_if_no_rules_active() throws Exception {
+  // // given
+  // SensorContextTester context = createContext();
+  // PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false),
+  // mockXmlReportFinder(), context.fileSystem());
+  //
+  // // when
+  // sensor.execute(context);
+  //
+  // // then
+  // //assertThat(context.measure(componentKey, metric)
+  //
+  // }
 
   @Test
   public void should_create_issue_for_coverage_not_met() throws Exception {
@@ -232,11 +233,11 @@ public class PitestSensorTest {
     sensor.execute(context);
 
     // then
-    //context.newCoverage()
+    // context.newCoverage()
     assertThat(context.allIssues()).isEmpty();
 
   }
- 
+
   // context.measures()
   // context.
   /*

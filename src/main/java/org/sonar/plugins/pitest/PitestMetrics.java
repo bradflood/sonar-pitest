@@ -43,12 +43,6 @@ public class PitestMetrics implements Metrics {
   public static final String MUTATIONS_DATA_KEY = "pitest_mutations_data"; // needed?
   public static final String MUTATIONS_KILLED_PERCENT_KEY = "pitest_mutations_killed_percent";
 
-  // public static final String MUTATIONS_DETECTED_KEY = "pitest_mutations_detected";
-  // public static final String MUTATIONS_NOT_DETECTED_KEY = "pitest_mutations_survived";
-  // public static final String MUTATIONS_MEMORY_ERROR_KEY = "pitest_mutations_memoryError";
-  // public static final String MUTATIONS_TIMED_OUT_KEY = "pitest_mutations_timedOut";
-
-  // how is this reported from pitest?
   public static final Metric<Serializable> MUTATIONS_NOT_COVERED = new Metric.Builder(MUTATIONS_NOT_COVERED_KEY, "Non Covered Mutations", Metric.ValueType.INT)
     .setDescription("Number of mutations not covered by any test.")
     .setDirection(Metric.DIRECTION_WORST)
@@ -91,7 +85,6 @@ public class PitestMetrics implements Metrics {
     .setDomain(PITEST_DOMAIN)
     .create();
 
-  // json representation of the mutation
   public static final Metric<Serializable> MUTATIONS_DATA = new Metric.Builder(MUTATIONS_DATA_KEY, "Mutations Data", Metric.ValueType.DATA)
     .setDescription("Mutations Data")
     .setDirection(Metric.DIRECTION_NONE)
@@ -99,7 +92,6 @@ public class PitestMetrics implements Metrics {
     .setDomain(PITEST_DOMAIN)
     .create();
 
-  // should this be renamed to MUTATIONS_DETECTED_RATIO
   public static final Metric<Serializable> MUTATIONS_KILLED_RATIO = new Metric.Builder(MUTATIONS_KILLED_PERCENT_KEY, "Mutations Coverage Ratio", Metric.ValueType.PERCENT)
     .setDescription("Ratio of mutations found by tests")
     .setDirection(Metric.DIRECTION_BETTER)
@@ -118,78 +110,8 @@ public class PitestMetrics implements Metrics {
       MUTATIONS_SURVIVED,
       MUTATIONS_ERROR,
       MUTATIONS_UNKNOWN,
-      // MUTATIONS_DETECTED,
-      // MUTATIONS_NOT_DETECTED,
       MUTATIONS_DATA,
       MUTATIONS_KILLED_RATIO);
   }
 
-  // public static final Metric<Serializable> MUTATIONS_DETECTED = new Metric.Builder(MUTATIONS_DETECTED_KEY, "Detected Mutations",
-  // Metric.ValueType.INT)
-  // .setDescription("Total number of mutations detected")
-  // .setDirection(Metric.DIRECTION_BETTER)
-  // .setQualitative(false)
-  // .setDomain(PITEST_DOMAIN)
-  // .create();
-
-  // public static final Metric<Serializable> MUTATIONS_NOT_DETECTED = new Metric.Builder(MUTATIONS_NOT_DETECTED_KEY, "Undetected
-  // Mutations", Metric.ValueType.INT)
-  // .setDescription("Number of mutations covered by a test, but not detected by the test")
-  // .setDirection(Metric.DIRECTION_WORST)
-  // .setQualitative(false)
-  // .setDomain(PITEST_DOMAIN)
-  // .create();
-  //
-  // public static final Metric<Serializable> MUTATIONS_MEMORY_ERROR = buildMetric(MUTATIONS_MEMORY_ERROR_KEY, "Memory Error Mutations",
-  // "Number of mutations detected by memory errors.",
-  // Metric.ValueType.INT, Metric.DIRECTION_BETTER, false, PITEST_DOMAIN);
-  //
-  // public static final Metric<Serializable> MUTATIONS_TIMED_OUT = buildMetric(MUTATIONS_TIMED_OUT_KEY, "Timed Out Mutations", "Number of
-  // mutations detected by time outs.",
-  // Metric.ValueType.INT, Metric.DIRECTION_BETTER, false, PITEST_DOMAIN);
-  //
-  // public static final Metric<Serializable> MUTATIONS_UNKNOWN = buildMetric(MUTATIONS_UNKNOWN_KEY, "Unknown Status Mutations", "Number of
-  // mutations with unknown status.",
-  // Metric.ValueType.INT, Metric.DIRECTION_WORST, false, PITEST_DOMAIN);
-
-  // private static Metric<Serializable> buildMetric(String key, String name, String description, ValueType valueType, Integer direction,
-  // Boolean qualitative, String domain) {
-  // return buildMetric(instanceBuilder(key, name, description, valueType, direction, qualitative, domain), qualitative);
-  // }
-  //
-  // private static Metric<Serializable> buildMetric(String key, String name, String description, ValueType valueType, Integer direction,
-  // Boolean qualitative, String domain,
-  // Double best, Double worst) {
-  // Builder builder = instanceBuilder(key, name, description, valueType, direction, qualitative, domain);
-  // builder.setBestValue(best);
-  // builder.setWorstValue(worst);
-  // return buildMetric(builder, qualitative);
-  // }
-  //
-  // private static Metric<Serializable> buildMetric(Builder builder, boolean qualitative) {
-  // Metric<Serializable> metric = builder.create();
-  // METRICS.add(metric);
-  // if (!qualitative) {
-  // QUANTITATIVE_METRICS.add(metric);
-  // }
-  // return metric;
-  // }
-
-  // private static Builder instanceBuilder(String key, String name, String description, ValueType valueType, Integer direction, Boolean
-  // quailitative, String domain) {
-  // Builder builder = new Builder(key, name, valueType);
-  // builder.setDescription(description);
-  // builder.setDirection(direction);
-  // builder.setQualitative(quailitative);
-  // builder.setDomain(domain);
-  // return builder;
-  // }
-
-  /**
-   * Returns the pitest quantitative metrics list.
-   * @return {@link List<Metric>} The pitest quantitative metrics list.
-   */
-  // public static List<Metric<Serializable>> getQuantitativeMetrics() {
-  // return QUANTITATIVE_METRICS;
-  // }
 }

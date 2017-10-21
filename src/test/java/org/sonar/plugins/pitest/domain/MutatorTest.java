@@ -22,44 +22,40 @@ package org.sonar.plugins.pitest.domain;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
-import org.sonar.plugins.pitest.domain.Mutator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MutatorTest {
-  
+
   @Test
   public void parse_invert_negs_succeeds_if_exact_match() {
     // given
-    
+
     // when
     Mutator mutator = Mutator.parse("org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator");
-    
-    
-    //then
+
+    // then
     assertThat(mutator).isEqualTo(Mutator.INVERT_NEGS);
   }
-  
+
   @Test
   public void parse_invert_negs_returns_unknown_if_not_exact_match() {
     // given
-    
+
     // when
     Mutator mutator = Mutator.parse("org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutatorX");
-    
-    
-    //then
+
+    // then
     assertThat(mutator).isEqualTo(Mutator.UNKNOWN);
   }
-  
-  
+
   @Test
   public void parse_of_valid_keys_succeeds() {
     List<String> validMutatorKeys = Arrays.asList(
-      "org.pitest.mutationtest.engine.gregor.mutators.ArgumentPropagationMutator", 
-      "org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator", 
-      "org.pitest.mutationtest.engine.gregor.mutators.ConstructorCallMutator", 
-      "org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator", 
+      "org.pitest.mutationtest.engine.gregor.mutators.ArgumentPropagationMutator",
+      "org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator",
+      "org.pitest.mutationtest.engine.gregor.mutators.ConstructorCallMutator",
+      "org.pitest.mutationtest.engine.gregor.mutators.IncrementsMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.MathMutator",
@@ -68,18 +64,17 @@ public class MutatorTest {
       "org.pitest.mutationtest.engine.gregor.mutators.RemoveConditionalMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator",
-      
+
       "org.pitest.mutationtest.engine.gregor.mutators.experimental.MemberVariableMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.experimental.NakedReceiverMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveIncrementsMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.experimental.RemoveSwitchMutator",
       "org.pitest.mutationtest.engine.gregor.mutators.experimental.ReturnValuesMutator",
-      "org.pitest.mutationtest.engine.gregor.mutators.experimental.SwitchMutator"
-      );
-    
+      "org.pitest.mutationtest.engine.gregor.mutators.experimental.SwitchMutator");
+
     for (String key : validMutatorKeys) {
       assertThat(Mutator.parse(key).getKey()).isNotEqualTo(Mutator.UNKNOWN.getKey());
     }
-    
+
   }
 }

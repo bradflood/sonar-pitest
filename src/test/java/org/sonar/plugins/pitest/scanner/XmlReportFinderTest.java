@@ -23,7 +23,6 @@ import com.google.common.io.Resources;
 import java.io.File;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.sonar.plugins.pitest.scanner.XmlReportFinder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,7 +61,7 @@ public class XmlReportFinderTest {
     // given
     XmlReportFinder finder = new XmlReportFinder();
     File directory = new File("imaginary");
-    
+
     // when
     File report = finder.findReport(directory);
 

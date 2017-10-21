@@ -27,31 +27,30 @@ import org.sonar.api.measures.Metric;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PitestMetricsTest {
-  
+
   @Test
   public void mutationsNotCoveredMetricIsCreatedCorrectly() {
     // given
-    
+
     // when
     Metric<Serializable> mutationsNotCovered = PitestMetrics.MUTATIONS_NOT_COVERED;
-    
-    //then
+
+    // then
     assertThat(mutationsNotCovered.getDescription()).contains("not covered");
     assertThat(mutationsNotCovered.getDirection()).isEqualTo(Metric.DIRECTION_WORST);
     assertThat(mutationsNotCovered.getQualitative()).isFalse();
     assertThat(mutationsNotCovered.getDomain()).isEqualTo(PitestMetrics.PITEST_DOMAIN);
   }
-  
+
   @Test
   public void verifyMetricsSize() {
     // given
-    
+
     // when
     List<Metric> metrics = new PitestMetrics().getMetrics();
-    
-    //then
+
+    // then
     assertThat(metrics).hasSize(8);
   }
-  
- 
+
 }

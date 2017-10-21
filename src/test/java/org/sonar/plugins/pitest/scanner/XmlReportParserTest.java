@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.plugins.pitest.domain.Mutant;
 import org.sonar.plugins.pitest.domain.MutantStatus;
-import org.sonar.plugins.pitest.scanner.XmlReportParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,7 +68,7 @@ public class XmlReportParserTest {
 
     // then
   }
-  
+
   @Test(expected = IllegalStateException.class)
   public void should_throw_exception_if_file_is_invalid() {
     // given
@@ -80,7 +79,7 @@ public class XmlReportParserTest {
 
     // then
   }
-  
+
   @Test
   public void should_log_but_not_throw_exception_if_line_number_parsing_fails() {
     // given

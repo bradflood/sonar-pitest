@@ -29,43 +29,44 @@ import org.sonar.api.utils.Version;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PitestPluginTest {
-  
+
   @Test
   public void test_scanner_side_plugin_extensions_compatible_with_5_6() {
-    
+
     PitestPlugin underTest = new PitestPlugin();
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(5, 6), SonarQubeSide.SCANNER);
     Plugin.Context context = new Plugin.Context(runtime);
     underTest.define(context);
     assertThat(context.getExtensions()).hasSize(10);
   }
-  
+
   @Test
   public void test_scanner_side_plugin_extensions_compatible_with_6_7() {
-    
-    PitestPlugin underTest = new PitestPlugin();
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6,7), SonarQubeSide.SCANNER);
-    Plugin.Context context = new Plugin.Context(runtime);
-    underTest.define(context);
-    assertThat(context.getExtensions()).hasSize(10);
-  }
-  
-  @Test
-  public void test_compute_engine_side_plugin_extensions_compatible_with_5_6() {
-    
-    PitestPlugin underTest = new PitestPlugin();
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(5, 6), SonarQubeSide.SCANNER);
-    Plugin.Context context = new Plugin.Context(runtime);
-    underTest.define(context);
-    assertThat(context.getExtensions()).hasSize(10);
-  }
-  @Test
-  public void test_compute_engine_side_plugin_extensions_compatible_with_6_7() {
-    
+
     PitestPlugin underTest = new PitestPlugin();
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER);
     Plugin.Context context = new Plugin.Context(runtime);
     underTest.define(context);
     assertThat(context.getExtensions()).hasSize(10);
-  }  
+  }
+
+  @Test
+  public void test_compute_engine_side_plugin_extensions_compatible_with_5_6() {
+
+    PitestPlugin underTest = new PitestPlugin();
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(5, 6), SonarQubeSide.SCANNER);
+    Plugin.Context context = new Plugin.Context(runtime);
+    underTest.define(context);
+    assertThat(context.getExtensions()).hasSize(10);
+  }
+
+  @Test
+  public void test_compute_engine_side_plugin_extensions_compatible_with_6_7() {
+
+    PitestPlugin underTest = new PitestPlugin();
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER);
+    Plugin.Context context = new Plugin.Context(runtime);
+    underTest.define(context);
+    assertThat(context.getExtensions()).hasSize(10);
+  }
 }

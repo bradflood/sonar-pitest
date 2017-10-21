@@ -57,14 +57,15 @@ public final class PitestPlugin implements Plugin {
           "located in the default directory (i.e. target/pit-reports)")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
-      XmlReportParser.class,
-      XmlReportFinder.class,
+
+      PitestComputer.class,
+      PitestCoverageComputer.class,
+      PitestMetrics.class,
+      ProjectReport.class,
       PitestRulesDefinition.class,
       PitestSensor.class,
-      PitestMetrics.class,
-      PitestComputer.class,
-      ProjectReport.class,
-      PitestCoverageComputer.class);
+      XmlReportParser.class,
+      XmlReportFinder.class);
 
     context.addExtensions(builder.build());
 

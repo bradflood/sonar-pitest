@@ -90,11 +90,10 @@ public class PitestSensor implements Sensor {
 
   @Override
   public void execute(SensorContext context) {
-    // TODO: I believe this is no longer needed since we are now providing more details in the SensorDescriptor. verify
-    // if (!fileSystem.hasFiles(fileSystemExecutionPredicate)) {
-    // LOGGER.debug("file system execution predicate not satisfied {}. returning", fileSystemExecutionPredicate);
-    // return;
-    // }
+    if (!fileSystem.hasFiles(fileSystemExecutionPredicate)) {
+      LOGGER.debug("file system execution predicate not satisfied {}. returning", fileSystemExecutionPredicate);
+      return;
+    }
 
     if (MODE_SKIP.equals(executionMode)) {
       LOGGER.debug("executionMode is skip. returning");
@@ -142,21 +141,13 @@ public class PitestSensor implements Sensor {
         addCoverageForKilledMutants(context, inputFile, sourceFileReport);
       }
 
-      // int detected = sourceFileReport.getMutationsDetected();
-      // int total = sourceFileReport.getMutationsTotal();
-
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_NOT_COVERED, sourceFileReport.getMutationsNoCoverage());
       saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_GENERATED, sourceFileReport.getMutationsTotal());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_DETECTED, detected);
-      // FIXME: add these back in incrementally
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_NO_COVERAGE, sourceFileReport.getMutationsNoCoverage());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_KILLED, sourceFileReport.getMutationsKilled());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_SURVIVED, sourceFileReport.getMutationsSurvived());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_MEMORY_ERROR, sourceFileReport.getMutationsMemoryError());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_TIMED_OUT, sourceFileReport.getMutationsTimedOut());
-      // saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_UNKNOWN, sourceFileReport.getMutationsUnknown());
-
-      // String json = sourceFileReport.toJSON();
-      // saveMetricOnFile(context, inputFile, PitestMetrics.MUTATIONS_DATA, json);
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_KILLED, sourceFileReport.getMutationsKilled());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_SURVIVED, sourceFileReport.getMutationsSurvived());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_ERROR, sourceFileReport.getMutationsOther());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_UNKNOWN, sourceFileReport.getMutationsUnknown());
+      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_DATA, sourceFileReport.toJSON());
     }
   }
 
@@ -168,9 +159,6 @@ public class PitestSensor implements Sensor {
       .save();
   }
 
-  /*
-   * should this be moved to ComputeEngine?
-   */
   private boolean isMutantCoverageThresholdReached(SourceFileReport sourceFileReport, ActiveRule coverageRule) {
     int killed = sourceFileReport.getMutationsKilled();
     int total = sourceFileReport.getMutationsTotal();
@@ -235,10 +223,6 @@ public class PitestSensor implements Sensor {
 
   private boolean isMutantRuleActive(RulesProfile qualityProfile) {
     return (qualityProfile.getActiveRule(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY) != null);
-  }
-
-  private boolean isMutationCoverageRuleActive(RulesProfile qualityProfile) {
-    return (qualityProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY) != null);
   }
 
   @Override

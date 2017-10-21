@@ -102,7 +102,6 @@ public class XmlReportParser {
 
     private void handleMutationTag() {
       detected = Boolean.parseBoolean(getAttribute("detected"));
-      // mutantStatus = MutantStatus.parse(getAttribute("status"));
       mutantStatus = MutantStatus.fromPitestDetectionStatus(getAttribute("status"));
     }
 
