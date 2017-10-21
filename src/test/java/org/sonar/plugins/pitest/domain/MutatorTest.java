@@ -17,11 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.domain;
 
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
+import org.sonar.plugins.pitest.domain.Mutator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -77,7 +78,6 @@ public class MutatorTest {
       );
     
     for (String key : validMutatorKeys) {
-      System.out.println("key: "+ key);
       assertThat(Mutator.parse(key).getKey()).isNotEqualTo(Mutator.UNKNOWN.getKey());
     }
     

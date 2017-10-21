@@ -41,7 +41,7 @@ public class PitestCoverageComputerTest {
 
     MeasureComputerDefinition def = coverageComputer.define(defContext);
     assertThat(def).isNotNull();
-    assertThat(def.getInputMetrics()).containsOnly(PitestMetrics.MUTATIONS_GENERATED_KEY, PitestMetrics.MUTATIONS_DETECTED_KEY);
+    assertThat(def.getInputMetrics()).containsOnly(PitestMetrics.MUTATIONS_GENERATED_KEY, PitestMetrics.MUTATIONS_KILLED_KEY);
     assertThat(def.getOutputMetrics()).containsOnly(PitestMetrics.MUTATIONS_COVERED_RATIO_KEY);
 
   }
@@ -54,7 +54,7 @@ public class PitestCoverageComputerTest {
     TestMeasureComputerDefinitionContext defContext = new TestMeasureComputerDefinitionContext();
     TestMeasureComputerContext context = new TestMeasureComputerContext(mock(Component.class), mock(Settings.class), coverageComputer.define(defContext));
     context.addMeasure(PitestMetrics.MUTATIONS_GENERATED_KEY, 10);
-    context.addMeasure(PitestMetrics.MUTATIONS_DETECTED_KEY, 2);
+    context.addMeasure(PitestMetrics.MUTATIONS_KILLED_KEY, 2);
 
     context.setIssues(Arrays.asList(new TestIssue.Builder().setKey("ABCD").build()));
 

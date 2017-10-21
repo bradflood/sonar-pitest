@@ -24,6 +24,10 @@ import org.sonar.api.Plugin;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.plugins.pitest.scanner.PitestSensor;
+import org.sonar.plugins.pitest.scanner.ProjectReport;
+import org.sonar.plugins.pitest.scanner.XmlReportFinder;
+import org.sonar.plugins.pitest.scanner.XmlReportParser;
 
 import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
 import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;

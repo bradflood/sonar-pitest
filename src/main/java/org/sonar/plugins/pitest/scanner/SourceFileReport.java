@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.scanner;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.sonar.plugins.pitest.domain.Mutant;
 
 /**
  * Mutants for a given java source file
@@ -35,10 +36,10 @@ public class SourceFileReport {
   private int mutationsNoCoverage = 0;
   private int mutationsKilled = 0;
   private int mutationsSurvived = 0;
-  private int mutationsMemoryError = 0;
-  private int mutationsTimedOut = 0;
+//  private int mutationsMemoryError = 0;
+//  private int mutationsTimedOut = 0;
   private int mutationsUnknown = 0;
-  private int mutationsDetected = 0;
+//  private int mutationsDetected = 0;
 
   public SourceFileReport(String sourceFileRelativePath) {
     this.sourceFileRelativePath = sourceFileRelativePath;
@@ -87,9 +88,9 @@ public class SourceFileReport {
         + mutant.sourceRelativePath());
     }
     mutants.add(mutant);
-    if (mutant.detected) {
-      mutationsDetected++;
-    }
+//    if (mutant.detected) {
+//      mutationsDetected++;
+//    }
     switch (mutant.mutantStatus) {
       case KILLED:
         mutationsKilled++;
@@ -99,12 +100,6 @@ public class SourceFileReport {
         break;
       case SURVIVED: // Only survived mutations are saved as violations
         mutationsSurvived++;
-        break;
-      case MEMORY_ERROR:
-        mutationsMemoryError++;
-        break;
-      case TIMED_OUT:
-        mutationsTimedOut++;
         break;
       case UNKNOWN:
         mutationsUnknown++;
@@ -132,19 +127,19 @@ public class SourceFileReport {
     return mutationsSurvived;
   }
 
-  int getMutationsMemoryError() {
-    return mutationsMemoryError;
-  }
+//  int getMutationsMemoryError() {
+//    return mutationsMemoryError;
+//  }
 
-  int getMutationsTimedOut() {
-    return mutationsTimedOut;
-  }
+//  int getMutationsTimedOut() {
+//    return mutationsTimedOut;
+//  }
 
   int getMutationsUnknown() {
     return mutationsUnknown;
   }
 
-  int getMutationsDetected() {
-    return mutationsDetected;
-  }
+//  int getMutationsDetected() {
+//    return mutationsDetected;
+//  }
 }

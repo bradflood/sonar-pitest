@@ -17,11 +17,40 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.domain;
 
+import java.util.Arrays;
+import java.util.List;
+
+/*
+ * Note: this is an incomplete list of DetectionStatus values.
+ * https://github.com/hcoles/pitest/blob/master/pitest/src/main/java/org/pitest/mutationtest/DetectionStatus.java
+ * 
+ * OTHER is used for TIMED_OUT, NON_VIABLE, MEMORY_ERROR, RUN_ERROR, as these have less to say about Test Quality
+ */
 public enum MutantStatus {
-  NO_COVERAGE, KILLED, SURVIVED, MEMORY_ERROR, TIMED_OUT, UNKNOWN;
+  NO_COVERAGE ("NO_COVERAGE"),
+  KILLED("KILLED"), 
+  SURVIVED("SURVIVED"), 
+  OTHER("TIMED_OUT", "NON_VIABLE", "MEMORY_ERROR", "RUN_ERROR"), 
+  UNKNOWN;
+  
+  private final List<String> pitestDetectionStatus ;
 
+  MutantStatus(final String... pitestDetectionStatus) {
+    this.pitestDetectionStatus = Arrays.asList(pitestDetectionStatus);
+    
+  }
+  
+  public static MutantStatus fromPitestDetectionStatus(String pitestDetectionStatus) {
+    for (MutantStatus mutantStatus : MutantStatus.values()) {
+      if (mutantStatus.pitestDetectionStatus.contains(pitestDetectionStatus)) {
+        return mutantStatus;
+      }
+    }
+    return UNKNOWN;
+  }
+  
   public static MutantStatus parse(String statusName) {
     for (MutantStatus mutantStatus : MutantStatus.values()) {
       if (mutantStatus.name().equals(statusName)) {

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.scanner;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
@@ -36,6 +36,8 @@ import org.sonar.api.ExtensionPoint;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.plugins.pitest.domain.Mutant;
+import org.sonar.plugins.pitest.domain.MutantStatus;
 
 @ScannerSide
 @ExtensionPoint
@@ -100,7 +102,8 @@ public class XmlReportParser {
 
     private void handleMutationTag() {
       detected = Boolean.parseBoolean(getAttribute("detected"));
-      mutantStatus = MutantStatus.parse(getAttribute("status"));
+      //mutantStatus = MutantStatus.parse(getAttribute("status"));
+      mutantStatus = MutantStatus.fromPitestDetectionStatus(getAttribute("status"));
     }
 
     private void handleMutatedClassTag() {

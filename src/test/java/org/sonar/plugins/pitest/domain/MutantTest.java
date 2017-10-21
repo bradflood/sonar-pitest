@@ -17,9 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.domain;
 
 import org.junit.Test;
+import org.sonar.plugins.pitest.domain.Mutant;
+import org.sonar.plugins.pitest.domain.MutantStatus;
+import org.sonar.plugins.pitest.domain.Mutator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

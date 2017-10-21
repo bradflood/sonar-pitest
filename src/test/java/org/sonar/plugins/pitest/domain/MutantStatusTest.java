@@ -17,54 +17,60 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.domain;
 
 import org.junit.Test;
+import org.sonar.plugins.pitest.domain.MutantStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MutantStatusTest {
+  /*
+   * creation from PitestDetectionStatus
+   */
+  @Test
+  public void other_is_returned_for_timed_out() {
+    MutantStatus status =   MutantStatus.fromPitestDetectionStatus("TIMED_OUT");
+    assertThat(status).isEqualTo(MutantStatus.OTHER);
+  }
   
   @Test
+  public void other_is_returned_for_memory_error() {
+    MutantStatus status =   MutantStatus.fromPitestDetectionStatus("MEMORY_ERROR");
+    assertThat(status).isEqualTo(MutantStatus.OTHER);
+  }
+
+  @Test
+  public void killed_is_created_correctly() {
+    MutantStatus status =   MutantStatus.fromPitestDetectionStatus("KILLED");
+    assertThat(status).isEqualTo(MutantStatus.KILLED);
+  }
+  /*
+   * parse
+   */
+  @Test
   public void parse_upper_case_KILLED_succeeds() {
-    // given
-    
-    // when
     MutantStatus status =  MutantStatus.parse("KILLED");
-    
-    //then
     assertThat(status).isEqualTo(MutantStatus.KILLED);
   }
   
   @Test
   public void parse_lower_case_killed_returns_unknown() {
-    // given
-    
-    // when
     MutantStatus status =  MutantStatus.parse("killed");
-    
-    //then
     assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
   }
   
   @Test
   public void parse_empty_string_returns_unknown() {
-    // given
-    
-    // when
     MutantStatus status =  MutantStatus.parse("");
-    
-    //then
     assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
   }
+  
   @Test
   public void parse_null_returns_unknown() {
-    // given
-    
-    // when
     MutantStatus status =  MutantStatus.parse(null);
-    
-    //then
     assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
   }
+  
+
 }

@@ -17,12 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.scanner;
 
 
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
+import org.sonar.plugins.pitest.domain.Mutant;
+import org.sonar.plugins.pitest.domain.MutantStatus;
+import org.sonar.plugins.pitest.scanner.ProjectReport;
+import org.sonar.plugins.pitest.scanner.SourceFileReport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

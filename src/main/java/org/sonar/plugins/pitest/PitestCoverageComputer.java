@@ -33,7 +33,7 @@ public class PitestCoverageComputer implements MeasureComputer {
   public MeasureComputerDefinition define(final MeasureComputerDefinitionContext defContext) {
 
     return defContext.newDefinitionBuilder()
-      .setInputMetrics(PitestMetrics.MUTATIONS_GENERATED_KEY, PitestMetrics.MUTATIONS_DETECTED_KEY)
+      .setInputMetrics(PitestMetrics.MUTATIONS_GENERATED_KEY, PitestMetrics.MUTATIONS_KILLED_KEY)
       .setOutputMetrics(PitestMetrics.MUTATIONS_COVERED_RATIO_KEY)
       .build();
   }
@@ -43,9 +43,9 @@ public class PitestCoverageComputer implements MeasureComputer {
     final Measure mutationsTotal = context.getMeasure(PitestMetrics.MUTATIONS_GENERATED_KEY);
     if (mutationsTotal != null) {
       final Integer elements = mutationsTotal.getIntValue();
-      final Measure detected = context.getMeasure(PitestMetrics.MUTATIONS_DETECTED_KEY);
-      if (elements > 0 && detected != null) {
-        final Integer coveredElements = detected.getIntValue();
+      final Measure killed = context.getMeasure(PitestMetrics.MUTATIONS_KILLED_KEY);
+      if (elements > 0 && killed != null) {
+        final Integer coveredElements = killed.getIntValue();
         final Double coverage = 100.0 * coveredElements / elements;
         context.addMeasure(PitestMetrics.MUTATIONS_COVERED_RATIO_KEY, coverage);
       }

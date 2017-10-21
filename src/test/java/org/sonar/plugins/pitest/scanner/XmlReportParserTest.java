@@ -17,13 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.scanner;
 
 import com.google.common.io.Resources;
 import java.io.File;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.plugins.pitest.domain.Mutant;
+import org.sonar.plugins.pitest.domain.MutantStatus;
+import org.sonar.plugins.pitest.scanner.XmlReportParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,8 +56,6 @@ public class XmlReportParserTest {
       "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", "GallioSensor.java"));
     assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(false, MutantStatus.SURVIVED, "org.sonar.plugins.csharp.gallio.GallioSensor", 166,
       "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", "GallioSensor.java"));
-    assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(true, MutantStatus.MEMORY_ERROR, "org.sonar.plugins.csharp.gallio.GallioSensor", 176,
-      "org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator", "GallioSensor.java"));
     assertThat(mutants).extracting("lineNumber").contains(166);
     assertThat(mutants).extracting("mutantStatus").doesNotContain(MutantStatus.UNKNOWN);
   }

@@ -19,52 +19,39 @@
  */
 package org.sonar.plugins.pitest;
 
+import java.io.Serializable;
+import java.util.List;
 import org.junit.Test;
+import org.sonar.api.measures.Metric;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PitestMetricsTest {
   
   @Test
-  public void parse_upper_case_KILLED_succeeds() {
+  public void mutationsNotCoveredMetricIsCreatedCorrectly() {
     // given
     
     // when
-    MutantStatus status =  MutantStatus.parse("KILLED");
+    Metric<Serializable> mutationsNotCovered = PitestMetrics.MUTATIONS_NOT_COVERED;
     
     //then
-    assertThat(status).isEqualTo(MutantStatus.KILLED);
+    assertThat(mutationsNotCovered.getDescription()).contains("not covered");
+    assertThat(mutationsNotCovered.getDirection()).isEqualTo(Metric.DIRECTION_WORST);
+    assertThat(mutationsNotCovered.getQualitative()).isFalse();
+    assertThat(mutationsNotCovered.getDomain()).isEqualTo(PitestMetrics.PITEST_DOMAIN);
   }
   
   @Test
-  public void parse_lower_case_killed_returns_unknown() {
+  public void verifyMetricsSize() {
     // given
     
     // when
-    MutantStatus status =  MutantStatus.parse("killed");
+    List<Metric> metrics = new PitestMetrics().getMetrics();
     
     //then
-    assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
+    assertThat(metrics).hasSize(8);
   }
   
-  @Test
-  public void parse_empty_string_returns_unknown() {
-    // given
-    
-    // when
-    MutantStatus status =  MutantStatus.parse("");
-    
-    //then
-    assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
-  }
-  @Test
-  public void parse_null_returns_unknown() {
-    // given
-    
-    // when
-    MutantStatus status =  MutantStatus.parse(null);
-    
-    //then
-    assertThat(status).isEqualTo(MutantStatus.UNKNOWN);
-  }
+ 
 }

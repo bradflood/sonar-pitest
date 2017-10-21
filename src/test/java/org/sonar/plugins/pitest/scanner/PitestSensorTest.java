@@ -17,10 +17,11 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.pitest;
+package org.sonar.plugins.pitest.scanner;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -34,10 +35,18 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
+import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.config.Configuration;
+import org.sonar.api.measures.Metric;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
+import org.sonar.plugins.pitest.PitestConstants;
+import org.sonar.plugins.pitest.domain.Mutant;
+import org.sonar.plugins.pitest.domain.MutantStatus;
+import org.sonar.plugins.pitest.scanner.PitestSensor;
+import org.sonar.plugins.pitest.scanner.XmlReportFinder;
+import org.sonar.plugins.pitest.scanner.XmlReportParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,18 +63,16 @@ import static org.sonar.plugins.pitest.PitestConstants.REPOSITORY_KEY;
 
 public class PitestSensorTest {
 
-
   /*
-   * Test note: PitestSensor requires the presence of keys MODE_KEY and REPORT_DIRECTORY_KEY (reference: PitestSensor.describe.. onlyWhenConfiguration.
+   * Test note: PitestSensor requires the presence of keys MODE_KEY and REPORT_DIRECTORY_KEY (reference: PitestSensor.describe..
+   * onlyWhenConfiguration.
    * If I'm understanding the platform API correctly, the platform will not call the sensor if the keys are not present.
    */
 
-  
-  
   @Test
   public void should_describe_execution_conditions() throws Exception {
     // given
-    SensorContextTester context = createContext(); 
+    SensorContextTester context = createContext();
     Configuration configuration = mockConfiguration();
     PitestSensor sensor = new PitestSensor(configuration, mockXmlReportParserOnJavaFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
 
@@ -73,15 +80,15 @@ public class PitestSensorTest {
 
     // when
     sensor.describe(descriptor);
-    
+
     // then
     verify(descriptor).name(PitestSensor.SENSOR_NAME);
-    verify(descriptor).onlyOnLanguages("java", "kt");
+    verify(descriptor).onlyOnLanguages("java");
     verify(descriptor).onlyOnFileType(InputFile.Type.MAIN);
     verify(descriptor).createIssuesForRuleRepository(REPOSITORY_KEY);
-    //verify(descriptor).onlyWhenConfiguration(conf -> configuration.hasKey(MODE_KEY) && configuration.hasKey(REPORT_DIRECTORY_KEY));
-  } 
-  
+    // verify(descriptor).onlyWhenConfiguration(conf -> configuration.hasKey(MODE_KEY) && configuration.hasKey(REPORT_DIRECTORY_KEY));
+  }
+
   @Test
   public void should_skip_analysis_if_mode_is_skip() throws IOException {
     // given
@@ -89,14 +96,14 @@ public class PitestSensorTest {
     when(configuration.get(MODE_KEY)).thenReturn(Optional.of(MODE_SKIP));
     SensorContextTester context = createContext();
     PitestSensor sensor = new PitestSensor(configuration, mock(XmlReportParser.class), mock(RulesProfile.class), mock(XmlReportFinder.class), context.fileSystem());
-    
+
     // when
     sensor.execute(context);
-    
+
     // then
     assertThat(context.allIssues()).isEmpty();
   }
-  
+
   @Test
   public void should_not_fail_if_no_report_found() throws IOException {
     // given
@@ -108,113 +115,153 @@ public class PitestSensorTest {
 
     // when
     sensor.execute(context);
-    
+
     // then
     assertThat(context.allIssues()).isEmpty();
   }
-  
-  @Test
-  public void should_create_issue_for_survived_mutant_if_present() throws Exception {
-    // given
-    SensorContextTester context = createContext();    
-    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
 
+  @Test
+  public void should_create_issue_for_survived_mutant() throws Exception {
+    // given
+    SensorContextTester context = createContext();
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
 
     // when
     sensor.execute(context);
-    
+
     // then
-    assertThat(context.allIssues()).hasSize(1);    
+    assertThat(context.allIssues()).hasSize(1);
     Issue issue = context.allIssues().iterator().next();
     assertThat(issue.ruleKey().rule()).isEqualTo(PitestConstants.SURVIVED_MUTANT_RULE_KEY);
-    
-  }  
-  
+
+  }
+
   @Test
   public void should_create_issue_for_both_java_and_kotlin_sources() throws Exception {
     // given
-    SensorContextTester context = createContext();    
+    SensorContextTester context = createContext();
     PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnMixedFiles(), mockRulesProfile(true, false), mockXmlReportFinder(), context.fileSystem());
-
 
     // when
     sensor.execute(context);
-    
+
     // then
     assertThat(context.allIssues()).hasSize(2);
-    for (Issue issue: context.allIssues()) {
+    for (Issue issue : context.allIssues()) {
       assertThat(issue.ruleKey().rule()).isEqualTo(PitestConstants.SURVIVED_MUTANT_RULE_KEY);
     }
-    
-  } 
-  
+
+  }
+
   @Test
   public void should_not_create_issue_for_survived_mutant_if_present_but_rule_not_active() throws Exception {
     // given
-    SensorContextTester context = createContext();    
+    SensorContextTester context = createContext();
     PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
-
 
     // when
     sensor.execute(context);
-    
+
     // then
     assertThat(context.allIssues()).isEmpty();
-    
-  } 
+
+  }
+  
+//  // FIXME: investigate API requirement here
+//  @Test
+//  public void should_create_measure_if_no_rules_active() throws Exception {
+//    // given
+//    SensorContextTester context = createContext();
+//    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
+//
+//    // when
+//    sensor.execute(context);
+//
+//    // then
+//    //assertThat(context.measure(componentKey, metric)
+//
+//  }
 
   @Test
   public void should_create_issue_for_coverage_not_met() throws Exception {
     // given
-    SensorContextTester context = createContext();    
+    SensorContextTester context = createContext();
     PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, true), mockXmlReportFinder(), context.fileSystem());
-
 
     // when
     sensor.execute(context);
-    
+
     // then
-    assertThat(context.allIssues()).hasSize(1);    
+    assertThat(context.allIssues()).hasSize(1);
     Issue issue = context.allIssues().iterator().next();
     assertThat(issue.ruleKey().rule()).isEqualTo(PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
-    
-  }  
-  
+
+  }
+
   @Test
   public void should_not_create_issue_for_coverage_not_met_if_coverage_below_threshold() throws Exception {
     // given
-    SensorContextTester context = createContext();  
-    RulesProfile mockRulesProfile = mockRulesProfile(false, true);   
+    SensorContextTester context = createContext();
+    RulesProfile mockRulesProfile = mockRulesProfile(false, true);
     ActiveRule mockCoverageRule = mockRulesProfile.getActiveRule(PitestConstants.REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
     when(mockCoverageRule.getParameter(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("10");
     PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile, mockXmlReportFinder(), context.fileSystem());
 
-
     // when
     sensor.execute(context);
-    
+
     // then
     assertThat(context.allIssues()).isEmpty();
-    
-  }   
+  }
+
   @Test
   public void should_not_create_issue_for_coverage_not_met_if_rule_not_active() throws Exception {
     // given
-    SensorContextTester context = createContext();    
+    SensorContextTester context = createContext();
     PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
-
 
     // when
     sensor.execute(context);
-    
+
     // then
     assertThat(context.allIssues()).isEmpty();
-    
-  }   
+
+  }
+
+  @Test
+  public void verifyMeasures() throws Exception {
+    // given
+    SensorContextTester context = createContext();
+    PitestSensor sensor = new PitestSensor(mockConfiguration(), mockXmlReportParserOnJavaFiles(), mockRulesProfile(false, false), mockXmlReportFinder(), context.fileSystem());
+
+    // when
+    sensor.execute(context);
+
+    // then
+    //context.newCoverage()
+    assertThat(context.allIssues()).isEmpty();
+
+  }
+ 
+  // context.measures()
+  // context.
+  /*
+   * public <G extends Serializable> Measure<G> measure(String componentKey, Metric<G> metric) {
+   * return measure(componentKey, metric.key());
+   * }
+   * 
+   * public <G extends Serializable> Measure<G> measure(String componentKey, String metricKey) {
+   * return sensorStorage.measuresByComponentAndMetric.row(componentKey).get(metricKey);
+   * }
+   * 
+   * context.allAnalysisErrors
+   * 
+   * context.linehits
+   */
   /*
    * 
    */
-  
+
   private Configuration mockConfiguration() {
     Configuration configuration = mock(Configuration.class);
     when(configuration.get(MODE_KEY)).thenReturn(Optional.of(MODE_REUSE_REPORT));
@@ -223,29 +270,29 @@ public class PitestSensorTest {
   }
 
   private XmlReportParser mockXmlReportParserOnJavaFiles() {
-    XmlReportParser xmlReportParser = mock(XmlReportParser.class) ;
+    XmlReportParser xmlReportParser = mock(XmlReportParser.class);
     List<Mutant> mutantsOnJavaFiles = mutantsOnJavaFiles();
     when(xmlReportParser.parse(any(File.class))).thenReturn(mutantsOnJavaFiles);
-    return xmlReportParser ; 
+    return xmlReportParser;
   }
-  
+
   private XmlReportParser mockXmlReportParserOnMixedFiles() {
-    XmlReportParser xmlReportParser = mock(XmlReportParser.class) ;
+    XmlReportParser xmlReportParser = mock(XmlReportParser.class);
     List<Mutant> mutantsOnMixedFiles = mutantsOnMixedFiles();
     when(xmlReportParser.parse(any(File.class))).thenReturn(mutantsOnMixedFiles);
-    return xmlReportParser ; 
-  } 
-  
+    return xmlReportParser;
+  }
+
   private XmlReportFinder mockXmlReportFinder() {
     XmlReportFinder xmlReportFinder = mock(XmlReportFinder.class);
     when(xmlReportFinder.findReport(any(File.class))).thenReturn(new File("fake-report.xml"));
     return xmlReportFinder;
   }
-  
+
   private RulesProfile mockRulesProfile(boolean survivedMutantRuleActive, boolean coverageRuleActive) {
-    RulesProfile qualityProfile = mock(RulesProfile.class); 
-    when(qualityProfile.getName()).thenReturn("fake pit profile"); 
-    
+    RulesProfile qualityProfile = mock(RulesProfile.class);
+    when(qualityProfile.getName()).thenReturn("fake pit profile");
+
     if (survivedMutantRuleActive) {
       ActiveRule survivedMutantRule = mock(ActiveRule.class);
       when(survivedMutantRule.getRule()).thenReturn(Rule.create());
@@ -256,11 +303,11 @@ public class PitestSensorTest {
       when(coverageRule.getParameter(PitestConstants.COVERAGE_RATIO_PARAM)).thenReturn("50");
       when(coverageRule.getRule()).thenReturn(Rule.create());
       when(qualityProfile.getActiveRule(PitestConstants.REPOSITORY_KEY, PitestConstants.INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY)).thenReturn(coverageRule);
-      
+
     }
-    return qualityProfile ;
+    return qualityProfile;
   }
-  
+
   private SensorContextTester createContext() throws IOException {
     SensorContextTester context = SensorContextTester.create(new File("src/test/resources/"));
     DefaultFileSystem fs = context.fileSystem();
@@ -276,14 +323,14 @@ public class PitestSensorTest {
     DefaultInputFile inputFile = new TestInputFileBuilder("module.key", effectiveKey).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
       .setType(InputFile.Type.MAIN)
       .setLines(1000)
-      .setOriginalLineOffsets(new int[]{0, 2, 10, 42, 1000})
+      .setOriginalLineOffsets(new int[] {0, 2, 10, 42, 1000})
       .setLastValidOffset(1)
       .initMetadata(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8))
       .setCharset(StandardCharsets.UTF_8)
       .build();
     fs.add(inputFile);
   }
-  
+
   private void createTestKotlinFile(DefaultFileSystem fs) throws IOException {
     String effectiveKey = "Maze.kt";
     File file = new File(fs.baseDir(), effectiveKey);
@@ -291,32 +338,31 @@ public class PitestSensorTest {
     DefaultInputFile inputFile = new TestInputFileBuilder("module.key", effectiveKey).setModuleBaseDir(fs.baseDirPath())
       .setType(InputFile.Type.MAIN)
       .setLines(1000)
-      .setOriginalLineOffsets(new int[]{0, 2, 10, 42, 1000})
+      .setOriginalLineOffsets(new int[] {0, 2, 10, 42, 1000})
       .setLastValidOffset(1)
       .initMetadata(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8))
       .setCharset(StandardCharsets.UTF_8)
       .build();
     fs.add(inputFile);
   }
+
   private List<Mutant> mutantsOnJavaFiles() {
     List<Mutant> mutants = new ArrayList<>();
     mutants.add(new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
     mutants.add(new Mutant(false, MutantStatus.SURVIVED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
     mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.Bar", 2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.Bar", 1000, null));
     mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.Bar", 0, null));
     return mutants;
   }
-  
+
   private List<Mutant> mutantsOnMixedFiles() {
     List<Mutant> mutants = new ArrayList<>();
     mutants.add(new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
     mutants.add(new Mutant(false, MutantStatus.SURVIVED, "com.foo.Bar", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
     mutants.add(new Mutant(false, MutantStatus.SURVIVED, "some.Maze", 10, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", "Maze.kt"));
     mutants.add(new Mutant(false, MutantStatus.NO_COVERAGE, "com.foo.Bar", 2, "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator"));
-    mutants.add(new Mutant(false, MutantStatus.MEMORY_ERROR, "com.foo.Bar", 1000, null));
     mutants.add(new Mutant(false, MutantStatus.UNKNOWN, "com.foo.Bar", 0, null));
     return mutants;
   }
-  
+
 }
