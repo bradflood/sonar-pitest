@@ -96,7 +96,17 @@ public class XmlReportParser {
       } else if ("mutator".equals(tagName)) {
         handleMutator();
       } else {
-        LOG.debug("Ignoring tag {}", tagName);
+        /*
+         * tags being ignored:
+         * index
+         * killingTest
+         * description
+         * mutatedMethod
+         * methodDescription
+         */
+        if (LOG.isTraceEnabled()) {
+          LOG.trace("Ignoring tag {}", tagName);
+        }
       }
     }
 

@@ -20,11 +20,14 @@
 package org.sonar.plugins.pitest;
 
 import org.junit.Test;
+import org.sonar.api.ce.measure.Component;
+import org.sonar.api.ce.measure.Settings;
 import org.sonar.api.ce.measure.MeasureComputer.MeasureComputerDefinition;
 import org.sonar.api.ce.measure.test.TestMeasureComputerContext;
 import org.sonar.api.ce.measure.test.TestMeasureComputerDefinitionContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class PitestComputerTest {
 
@@ -77,4 +80,20 @@ public class PitestComputerTest {
 
   }
 
+  @Test
+  public void calculateCoveragePercent() {
+    // given
+    PitestComputer coverageComputer = new PitestComputer();
+    TestMeasureComputerDefinitionContext defContext = new TestMeasureComputerDefinitionContext();
+    TestMeasureComputerContext context = new TestMeasureComputerContext(mock(Component.class), mock(Settings.class), coverageComputer.define(defContext));
+    context.addMeasure(PitestMetrics.MUTATIONS_GENERATED_KEY, 10);
+    context.addMeasure(PitestMetrics.MUTATIONS_KILLED_KEY, 2);
+
+    // when
+    coverageComputer.compute(context);
+
+    // then
+    assertThat(context.getMeasure(PitestMetrics.MUTATIONS_KILLED_PERCENT_KEY).getDoubleValue()).isEqualTo(20);
+
+  }
 }

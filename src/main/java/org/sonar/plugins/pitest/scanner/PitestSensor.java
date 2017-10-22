@@ -57,7 +57,7 @@ import static org.sonar.plugins.pitest.PitestConstants.SURVIVED_MUTANT_RULE_KEY;
 public class PitestSensor implements Sensor {
 
   private static final Logger LOGGER = Loggers.get(PitestSensor.class);
-  static final String SENSOR_NAME = "Pitest Mutation Test";
+  static final String SENSOR_NAME = "Pitest Sensor";
 
   private final Configuration configuration;
   private final XmlReportParser parser;
@@ -85,7 +85,6 @@ public class PitestSensor implements Sensor {
     descriptor.createIssuesForRuleRepository(REPOSITORY_KEY);
     descriptor.onlyOnFileType(InputFile.Type.MAIN);
     descriptor.onlyOnLanguages("java");
-    descriptor.onlyWhenConfiguration(conf -> configuration.hasKey(MODE_KEY) && configuration.hasKey(REPORT_DIRECTORY_KEY));
   }
 
   @Override
@@ -130,33 +129,39 @@ public class PitestSensor implements Sensor {
 
       if (isMutantRuleActive(rulesProfile)) {
         addIssueForSurvivingMutants(context, inputFile, sourceFileReport);
+      } else {
+        LOGGER.debug("Mutant Rule is not active. continuing");
       }
 
       ActiveRule coverageRule = rulesProfile.getActiveRule(REPOSITORY_KEY, INSUFFICIENT_MUTATION_COVERAGE_RULE_KEY);
       if (coverageRule != null && !isMutantCoverageThresholdReached(sourceFileReport, coverageRule)) {
+        LOGGER.debug("adding Issue for INSUFFICIENT_MUTATION_COVERAGE");
         addIssueForMutantKilledThresholdNotReached(context, inputFile, coverageRule.getParameter(COVERAGE_RATIO_PARAM));
       }
 
       if (sourceFileReport.getMutationsKilled() > 0) {
+        LOGGER.debug("adding Coverage for Killed Mutations. sourceFileReport:" + sourceFileReport);
         addCoverageForKilledMutants(context, inputFile, sourceFileReport);
       }
 
-      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_NOT_COVERED, sourceFileReport.getMutationsNoCoverage());
-      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_GENERATED, sourceFileReport.getMutationsTotal());
-      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_KILLED, sourceFileReport.getMutationsKilled());
-      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_SURVIVED, sourceFileReport.getMutationsSurvived());
-      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_ERROR, sourceFileReport.getMutationsOther());
-      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_UNKNOWN, sourceFileReport.getMutationsUnknown());
-      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_DATA, sourceFileReport.toJSON());
+//      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_NOT_COVERED, sourceFileReport.getMutationsNoCoverage());
+//      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_GENERATED, sourceFileReport.getMutationsTotal());
+//      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_KILLED, sourceFileReport.getMutationsKilled());
+//      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_SURVIVED, sourceFileReport.getMutationsSurvived());
+//      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_ERROR, sourceFileReport.getMutationsOther());
+//      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_UNKNOWN, sourceFileReport.getMutationsUnknown());
+//      saveMeasureOnFile(context, inputFile, PitestMetrics.MUTATIONS_DATA, sourceFileReport.toJSON());
     }
   }
 
   private <T extends Serializable> void saveMeasureOnFile(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
+    LOGGER.debug("BEGIN. adding Measure for metric: {}, value {}", metric, value);
     context.<T>newMeasure()
       .withValue(value)
       .forMetric(metric)
       .on(inputFile)
       .save();
+    LOGGER.debug("BEGIN. adding Measure for metric: {}, value {}", metric, value);
   }
 
   private boolean isMutantCoverageThresholdReached(SourceFileReport sourceFileReport, ActiveRule coverageRule) {
@@ -184,8 +189,10 @@ public class PitestSensor implements Sensor {
   private void addIssueForSurvivingMutants(SensorContext context, InputFile inputFile, SourceFileReport sourceFileReport) {
     Collection<Mutant> mutants = sourceFileReport.getMutants();
     for (Mutant mutant : mutants) {
+      //LOGGER.debug("addIssueForSurvivingMutants. mutant: " + mutant);
+      
       if (MutantStatus.SURVIVED.equals(mutant.mutantStatus)) {
-
+        LOGGER.debug("Adding issue for SURVIVED mutant. " + mutant);
         NewIssue newIssue = context.newIssue()
           .forRule(RuleKey.of(REPOSITORY_KEY, SURVIVED_MUTANT_RULE_KEY));
 
@@ -196,15 +203,16 @@ public class PitestSensor implements Sensor {
 
         newIssue.at(location);
         newIssue.save();
-      }
+      } 
     }
   }
 
   private void addCoverageForKilledMutants(SensorContext context, InputFile inputFile, SourceFileReport sourceFileReport) {
     Collection<Mutant> mutants = sourceFileReport.getMutants();
     for (Mutant mutant : mutants) {
+      //LOGGER.debug("addCoverageForKilledMutants. mutant: " + mutant);
       if (MutantStatus.KILLED.equals(mutant.mutantStatus)) {
-
+        LOGGER.debug("Adding coverage for KILLED mutant. ");
         context.newCoverage()
           .onFile(inputFile)
           .lineHits(mutant.lineNumber, 1)

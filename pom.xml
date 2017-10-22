@@ -79,8 +79,8 @@
 		<guava.version>11.0.2</guava.version>
 
 		<!-- eat your own dog food -->
-		<sonar.pitest.mode>active</sonar.pitest.mode>
-		<sonar.junit.reportsPath>target/surefire-reports</sonar.junit.reportsPath>
+		<sonar.pitest.mode>reuseReport</sonar.pitest.mode>
+		<sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
 
 		<!-- license -->
 		<license.owner>${project.organization.name}</license.owner>
@@ -136,7 +136,7 @@
 				<!-- FIXME: analyze need and consider removing -->
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<testNGArtifactName>none:none</testNGArtifactName>
+					<argLine>@{argLine}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -147,9 +147,9 @@
 					<excludes>
 						<exclude>*_javassist_*</exclude>
 					</excludes>
-					<includes>
-						<include>org.sonar.plugins.pitest</include>
-					</includes>
+<!-- 					<includes> -->
+<!-- 						<include>org.sonar.plugins.pitest</include> -->
+<!-- 					</includes> -->
 				</configuration>
 				<executions>
 					<execution>

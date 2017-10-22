@@ -29,7 +29,7 @@ import org.sonar.plugins.pitest.scanner.XmlReportFinder;
 import org.sonar.plugins.pitest.scanner.XmlReportParser;
 
 import static org.sonar.plugins.pitest.PitestConstants.MODE_KEY;
-import static org.sonar.plugins.pitest.PitestConstants.MODE_SKIP;
+import static org.sonar.plugins.pitest.PitestConstants.MODE_REUSE_REPORT;
 import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_DEF;
 import static org.sonar.plugins.pitest.PitestConstants.REPORT_DIRECTORY_KEY;
 
@@ -45,9 +45,9 @@ public final class PitestPlugin implements Plugin {
 
     builder.add(
       PropertyDefinition.builder(MODE_KEY)
-        .defaultValue(MODE_SKIP)
+        .defaultValue(MODE_REUSE_REPORT)
         .name("PIT activation mode")
-        .description("Possible values:  empty (means skip) and 'reuseReport'")
+        .description("Possible values:  'reuseReport' and 'skip'")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
       PropertyDefinition.builder(REPORT_DIRECTORY_KEY)
@@ -59,7 +59,6 @@ public final class PitestPlugin implements Plugin {
         .build(),
 
       PitestComputer.class,
-      PitestCoverageComputer.class,
       PitestMetrics.class,
       ProjectReport.class,
       PitestRulesDefinition.class,
@@ -68,6 +67,6 @@ public final class PitestPlugin implements Plugin {
       XmlReportFinder.class);
 
     context.addExtensions(builder.build());
-
+    
   }
 }
