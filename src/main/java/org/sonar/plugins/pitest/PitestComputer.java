@@ -60,7 +60,7 @@ public class PitestComputer implements MeasureComputer {
         }
       }
     }
-    
+
     final Measure mutationsTotal = context.getMeasure(PitestMetrics.MUTATIONS_GENERATED_KEY);
     if (mutationsTotal != null) {
       final Integer elements = mutationsTotal.getIntValue();

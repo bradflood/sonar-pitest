@@ -36,15 +36,15 @@ public final class MutantLocation {
     this.mutatedMethod = mutatedMethod;
     this.methodDescription = methodDescription;
     this.lineNumber = lineNumber;
-    String extension = sourceFile.substring(sourceFile.indexOf('.')+1);
+    String extension = sourceFile.substring(sourceFile.indexOf('.') + 1);
     if ("kt".equals(extension)) {
       this.relativePath = sourceFile;
     } else if ("java".equals(extension)) {
       this.relativePath = calculateJavaRelativePath(className);
     } else {
-      throw new IllegalStateException("unrecognized extension: " + extension) ;
+      throw new IllegalStateException("unrecognized extension: " + extension);
     }
-    
+
   }
 
   public String getClassName() {
@@ -61,17 +61,16 @@ public final class MutantLocation {
 
   public String getMethodDescription() {
     return methodDescription;
-  } 
-  
+  }
+
   public int getLineNumber() {
     return lineNumber;
   }
 
-
   public String getRelativePath() {
     return relativePath;
-  } 
-  
+  }
+
   private static String calculateJavaRelativePath(String javaClassName) {
     final StringTokenizer tok = new StringTokenizer(javaClassName, "$");
     final String classNameFiltered = tok.nextToken();

@@ -106,9 +106,9 @@ public class SourceFileReport {
   }
 
   public String getRelativePath() {
-    return sourceFileRelativePath ;
+    return sourceFileRelativePath;
   }
-  
+
   public Collection<Mutant> getMutants() {
     return Collections.unmodifiableList(mutants);
   }
@@ -142,5 +142,5 @@ public class SourceFileReport {
     return "SourceFileReport [sourceFileRelativePath=" + sourceFileRelativePath + ", mutants=" + mutants + ", mutationsNoCoverage=" + mutationsNoCoverage + ", mutationsKilled="
       + mutationsKilled + ", mutationsSurvived=" + mutationsSurvived + ", mutationsOther=" + mutationsOther + ", mutationsUnknown=" + mutationsUnknown + "]";
   }
-  
+
 }

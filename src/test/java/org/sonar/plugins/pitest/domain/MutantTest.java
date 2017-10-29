@@ -25,9 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MutantTest {
 
-  public static final String INLINE_CONSTANT_MUTATOR = "org.pitest.mutationtest.engine.gregor.mutators.InlineConstantMutator";
-  public static final String RETURN_VALS_MUTATOR = "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator";
-  public static final String CONSTRUCTOR_MUTATOR = Mutator.CONSTRUCTOR.getKey();
 
   @Test
   public void should_get_path_to_java_source_file() {
@@ -39,27 +36,24 @@ public class MutantTest {
     assertThat(path).isEqualTo("com/foo/Bar.java");
   }
 
-
-
-//  @Test
-//  public void should_get_path_to_source_file_for_an_anonymous_inner_class() {
-//    // given
-//    Mutant mutant = new TestMutantBuilder().className(mutator(Mutator.CONSTRUCTOR).build();
-//    //new Mutant(true, MutantStatus.KILLED, "com.foo.Bar$1", "mutatedMethod", 17, INLINE_CONSTANT_MUTATOR, "com/foo/Bar.java");
-//    // when
-//    String path = mutant.sourceRelativePath();
-//    // then
-//    assertThat(path).isEqualTo("com/foo/Bar.java");
-//  }
+  @Test
+  public void should_get_path_to_source_file_for_an_inner_class() {
+    // given
+    Mutant mutant = new TestMutantBuilder().className("com.foo.Bar$1").sourceFile("Bar.java").build();
+    // when
+    String path = mutant.sourceRelativePath();
+    // then
+    assertThat(path).isEqualTo("com/foo/Bar.java");
+  }
 
   @Test
   public void verify_description() {
     // given
-    Mutant mutant = new TestMutantBuilder().mutator(Mutator.CONSTRUCTOR).build();
+    Mutant mutant = new TestMutantBuilder().mutator(Mutator.CONSTRUCTOR).description("description").build();
     // when
     String path = mutant.violationDescription();
     // then
-    assertThat(path).isEqualTo("A constructor call has been removed without breaking the tests");
+    assertThat(path).isEqualTo("A constructor call has been removed without breaking the tests [description]");
   }
 
   @Test
@@ -83,5 +77,4 @@ public class MutantTest {
     assertThat(string).isEqualTo(
       "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.Bar\", \"mname\" : \"Constructor Calls Mutator\", \"mdesc\" : \"A constructor call has been removed\", \"sourceFile\" : \"Bar.kt\", \"mmethod\" : \"mutatedMethod\", \"l\" : \"17\", \"killtest\" : \"killingTest\" }");
   }
-  
 }

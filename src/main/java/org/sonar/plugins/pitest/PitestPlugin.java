@@ -67,6 +67,6 @@ public final class PitestPlugin implements Plugin {
       XmlReportFinder.class);
 
     context.addExtensions(builder.build());
-    
+
   }
 }

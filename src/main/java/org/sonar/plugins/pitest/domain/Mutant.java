@@ -29,24 +29,21 @@ public final class Mutant {
 
   public final boolean detected;
   public final MutantStatus mutantStatus;
-  public final MutantLocation mutantLocation ;
+  public final MutantLocation mutantLocation;
   public final Mutator mutator;
-  public final int index; 
+  public final int index;
   public final String killingTest;
-  public final String description; 
+  public final String description;
 
-  public Mutant(boolean detected, MutantStatus mutantStatus, MutantLocation mutantLocation, String mutatorKey,  int index, String description, @Nullable String killingTest) {
+  public Mutant(boolean detected, MutantStatus mutantStatus, MutantLocation mutantLocation, String mutatorKey, int index, String description, @Nullable String killingTest) {
     this.detected = detected;
     this.mutantStatus = mutantStatus;
-    this.mutantLocation = mutantLocation ;
+    this.mutantLocation = mutantLocation;
     this.mutator = Mutator.parse(mutatorKey);
-    this.index = index; 
-    this.description = description ;
+    this.index = index;
+    this.description = description;
     this.killingTest = killingTest;
   }
-
-
-
 
   public String sourceRelativePath() {
     return mutantLocation.getRelativePath();
@@ -54,9 +51,12 @@ public final class Mutant {
   }
 
   public String violationDescription() {
-    return mutator.getDescription() + " without breaking the tests";
+    StringBuilder builder = new StringBuilder(mutator.getDescription());
+    builder.append(" without breaking the tests");
+    builder.append(" [").append(description).append("]");
+    return builder.toString();
   }
-  
+
   public int lineNumber() {
     return mutantLocation.lineNumber;
   }
