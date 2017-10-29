@@ -32,8 +32,8 @@ public final class Mutant {
   public final MutantLocation mutantLocation;
   public final Mutator mutator;
   public final int index;
-  public final String killingTest;
   public final String description;
+  public final String killingTest;
 
   public Mutant(boolean detected, MutantStatus mutantStatus, MutantLocation mutantLocation, String mutatorKey, int index, String description, @Nullable String killingTest) {
     this.detected = detected;
@@ -47,7 +47,6 @@ public final class Mutant {
 
   public String sourceRelativePath() {
     return mutantLocation.getRelativePath();
-
   }
 
   public String violationDescription() {

@@ -64,8 +64,8 @@ public class XmlReportParser {
     private int lineNumber;
     private String mutator;
     private int index;
-    private String killingTest;
     private String description;
+    private String killingTest;
 
     private void reset() {
       detected = false;
@@ -77,8 +77,8 @@ public class XmlReportParser {
       lineNumber = 0;
       mutator = null;
       index = 0;
-      killingTest = null;
       description = null;
+      killingTest = null;
     }
 
     public Collection<Mutant> parse(File file) {
@@ -219,7 +219,7 @@ public class XmlReportParser {
       String tagName = stream.getLocalName();
       if ("mutation".equals(tagName)) {
         MutantLocation location = new MutantLocation(mutatedClass, sourceFile, mutatedMethod, methodDescription, lineNumber);
-        mutants.add(new Mutant(detected, mutantStatus, location, mutator, index, killingTest, description));
+        mutants.add(new Mutant(detected, mutantStatus, location, mutator, index, description, killingTest));
       }
     }
 

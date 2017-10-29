@@ -27,11 +27,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.plugins.pitest.domain.Mutant;
 import org.sonar.plugins.pitest.domain.MutantStatus;
+import org.sonar.plugins.pitest.domain.TestMutantBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.failBecauseExceptionWasNotThrown;
 
 public class XmlReportParserTest {
-  private static final String MODULE_BASE_DIR = "src/test/resources/xml-report-parser-test" ;
+  private static final String MODULE_BASE_DIR = "src/test/resources/xml-report-parser-test";
 
   private XmlReportParser parser;
 
@@ -40,44 +42,41 @@ public class XmlReportParserTest {
     parser = new XmlReportParser();
   }
 
-  @Ignore("WIP")
   @Test
   public void should_parse_report_and_find_mutants() {
     // given
     File report = new File(MODULE_BASE_DIR, "mutations.xml");
-
-    // when
-    Collection<Mutant> mutants = parser.parse(report);
-
-    // then
-    assertThat(mutants).hasSize(46);
-
-//    assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(true, MutantStatus.KILLED, "org.sonar.plugins.csharp.gallio.GallioSensor", "mutatedMethod", 87,
-//      "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator", "GallioSensor.java"));
-//    assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(false, MutantStatus.NO_COVERAGE, "org.sonar.plugins.csharp.gallio.GallioSensor", "mutatedMethod", 162,
-//      "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", "GallioSensor.java"));
-//    assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(false, MutantStatus.SURVIVED, "org.sonar.plugins.csharp.gallio.GallioSensor", "mutatedMethod", 166,
-//      "org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator", "GallioSensor.java"));
-//    assertThat(mutants).extracting("lineNumber").contains(166);
-//    assertThat(mutants).extracting("mutantStatus").doesNotContain(MutantStatus.UNKNOWN);
-  }
-
-  @Ignore("WIP")
-  @Test
-  public void should_parse_report_and_find_mutants_if_elements_are_unordered() {
-    // given
-    File report = new File(Resources.getResource("mutations-elements-out-of-order.xml").getFile());
+    Mutant targetMutant = new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).sourceFile("PitestSensor.java").className("org.sonar.plugins.pitest.scanner.PitestSensor")
+      .mutatedMethod("addCoverageForKilledMutants").methodDescription("(Lorg/sonar/api/batch/sensor/SensorContext;Lorg/sonar/api/batch/fs/InputFile;Lorg/sonar/plugins/pitest/scanner/SourceFileReport;)V")
+      .lineNumber(212).mutator("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator").index(15).killingTest("").description("negated conditional")
+      .build();
 
     // when
     Collection<Mutant> mutants = parser.parse(report);
 
     // then
     assertThat(mutants).hasSize(1);
-
-//    assertThat(mutants).usingFieldByFieldElementComparator().contains(new Mutant(true, MutantStatus.KILLED, "org.sonar.plugins.csharp.gallio.GallioSensor", "mutatedMethod", 85,
-//      "org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator", "GallioSensor.java"));
+    // FIXME: find out why mutantLocation comparison fails
+    assertThat(mutants).usingElementComparatorIgnoringFields("mutantLocation").contains(targetMutant);
   }
-  
+
+  @Test
+  public void should_parse_report_and_find_mutants_if_elements_are_unordered() {
+    // given
+    File report = new File(MODULE_BASE_DIR, "mutations-unordered.xml");
+    Mutant targetMutant = new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).sourceFile("PitestSensor.java").className("org.sonar.plugins.pitest.scanner.PitestSensor")
+      .mutatedMethod("addCoverageForKilledMutants").methodDescription("(Lorg/sonar/api/batch/sensor/SensorContext;Lorg/sonar/api/batch/fs/InputFile;Lorg/sonar/plugins/pitest/scanner/SourceFileReport;)V")
+      .lineNumber(212).mutator("org.pitest.mutationtest.engine.gregor.mutators.NegateConditionalsMutator").index(15).killingTest("").description("negated conditional")
+      .build();
+    
+    // when
+    Collection<Mutant> mutants = parser.parse(report);
+
+    // then
+    assertThat(mutants).hasSize(1);
+    assertThat(mutants).usingElementComparatorIgnoringFields("mutantLocation").contains(targetMutant);
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void should_throw_exception_if_file_is_missing() {
     // given
@@ -86,6 +85,7 @@ public class XmlReportParserTest {
     new File(Resources.getResource("imaginary").getFile());
 
     // then
+    failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -97,6 +97,7 @@ public class XmlReportParserTest {
     parser.parse(report);
 
     // then
+    failBecauseExceptionWasNotThrown(IllegalStateException.class);
   }
 
   @Test
