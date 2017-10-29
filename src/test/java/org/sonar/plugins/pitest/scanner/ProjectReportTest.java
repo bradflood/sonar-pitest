@@ -23,30 +23,55 @@ import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
 import org.sonar.plugins.pitest.domain.Mutant;
-import org.sonar.plugins.pitest.domain.MutantStatus;
+import org.sonar.plugins.pitest.domain.TestMutantBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProjectReportTest {
 
   @Test
-  public void should_collect_mutant_metrics() {
+  public void should_organize_by_relative_path() {
     // given
-    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Toto", 17, "key1", "com/foo/bar/Toto.java");
-    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.qix.Tata", 17, "key2", "com/foo/bar/qix/Tata.java");
-    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Toto", 15, "key3", "com/foo/bar/Toto.java");
+    Mutant m1 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build(); 
+    Mutant m2 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build(); 
+    Mutant m3 = new TestMutantBuilder().className("com.foo.bar.differentPackage.Toto").sourceFile("Toto.java").build(); 
+    Mutant m4 = new TestMutantBuilder().className("com.foo.bar.qix.Tata").sourceFile("Tata.java").build();  
+    Mutant m5 = new TestMutantBuilder().className("bar.Toto").sourceFile("Toto.kt").build(); 
 
     // when
-    ProjectReport report = new ProjectReport(Arrays.asList(m1, m2, m3));
+    ProjectReport report = new ProjectReport(Arrays.asList(m1, m2, m3, m4, m5));
 
     // then
     Collection<SourceFileReport> sourceFileReports = report.getSourceFileReports();
-    assertThat(sourceFileReports).hasSize(2);
+    assertThat(sourceFileReports).hasSize(4);
     assertThat(sourceFileReports)
       .usingElementComparatorOnFields("sourceFileRelativePath")
       .containsOnly(
         new SourceFileReport("com/foo/bar/Toto.java"),
-        new SourceFileReport("com/foo/bar/qix/Tata.java"));
-
+        new SourceFileReport("com/foo/bar/differentPackage/Toto.java"),
+        new SourceFileReport("com/foo/bar/qix/Tata.java"),
+        new SourceFileReport("Toto.kt"));
   }
+  
+  @Test
+  public void should_collect_in_same_report_when_in_same_file() {
+    // given
+    Mutant m1 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build(); 
+    Mutant m2 = new TestMutantBuilder().className("com.foo.bar.Toto").sourceFile("Toto.java").build(); 
+
+    // when
+    ProjectReport report = new ProjectReport(Arrays.asList(m1, m2));
+
+    // then
+    Collection<SourceFileReport> sourceFileReports = report.getSourceFileReports();
+    assertThat(sourceFileReports).hasSize(1);
+    assertThat(sourceFileReports)
+      .usingElementComparatorOnFields("sourceFileRelativePath")
+      .containsOnly(
+        new SourceFileReport("com/foo/bar/Toto.java"));
+    
+    SourceFileReport sourceFileReport = sourceFileReports.iterator().next();
+    assertThat(sourceFileReport.getMutationsTotal()).isEqualTo(2);
+    
+  }  
 }

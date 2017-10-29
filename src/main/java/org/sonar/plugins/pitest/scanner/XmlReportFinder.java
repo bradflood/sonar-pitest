@@ -38,6 +38,7 @@ public class XmlReportFinder {
     if (!reportDirectory.exists() || !reportDirectory.isDirectory()) {
       return null;
     }
+
     final AtomicReference<Path> latestReport = new AtomicReference<>();
     try {
       Files.walkFileTree(reportDirectory.toPath(), new FileVisitor<Path>() {
@@ -50,10 +51,15 @@ public class XmlReportFinder {
 
         @Override
         public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-          if (file.toFile().isFile()
-            && file.toString().endsWith(".xml")
-            && (latestReport.get() == null
-              || Files.getLastModifiedTime(file).compareTo(Files.getLastModifiedTime(latestReport.get())) > 0)) {
+          if (!file.toFile().isFile()) {
+            return FileVisitResult.CONTINUE;
+          }
+          if (!file.toString().endsWith("mutations.xml")) {
+            return FileVisitResult.CONTINUE;
+          }
+
+          if (latestReport.get() == null
+            || Files.getLastModifiedTime(file).compareTo(Files.getLastModifiedTime(latestReport.get())) > 0) {
             latestReport.set(file);
           }
           return FileVisitResult.CONTINUE;

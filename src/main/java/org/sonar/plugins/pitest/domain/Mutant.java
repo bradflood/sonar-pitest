@@ -19,57 +19,65 @@
  */
 package org.sonar.plugins.pitest.domain;
 
-import java.util.StringTokenizer;
+import javax.annotation.Nullable;
 
 /**
  * Mutation information from the pitest report.
  *
- * @author Jaime Porras
  */
-public class Mutant {
+public final class Mutant {
 
   public final boolean detected;
   public final MutantStatus mutantStatus;
-  public final String className;
-  public final String sourceFile;
-  public final int lineNumber;
+  public final MutantLocation mutantLocation ;
   public final Mutator mutator;
+  public final int index; 
+  public final String killingTest;
+  public final String description; 
 
-  public Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, String mutatorKey, String sourceFile) {
+  public Mutant(boolean detected, MutantStatus mutantStatus, MutantLocation mutantLocation, String mutatorKey,  int index, String description, @Nullable String killingTest) {
     this.detected = detected;
     this.mutantStatus = mutantStatus;
-    this.className = className;
-    this.sourceFile = sourceFile;
-    this.lineNumber = lineNumber;
+    this.mutantLocation = mutantLocation ;
     this.mutator = Mutator.parse(mutatorKey);
+    this.index = index; 
+    this.description = description ;
+    this.killingTest = killingTest;
   }
 
-  public Mutant(boolean detected, MutantStatus mutantStatus, String className, int lineNumber, String mutatorKey) {
-    this.detected = detected;
-    this.mutantStatus = mutantStatus;
-    this.className = className;
 
-    final StringTokenizer tok = new StringTokenizer(className, "$");
-    final String classNameFiltered = tok.nextToken();
-    this.sourceFile = classNameFiltered.replace('.', '/') + ".java";
-    this.lineNumber = lineNumber;
-    this.mutator = Mutator.parse(mutatorKey);
-  }
+
 
   public String sourceRelativePath() {
-    return sourceFile;
+    return mutantLocation.getRelativePath();
 
   }
 
   public String violationDescription() {
     return mutator.getDescription() + " without breaking the tests";
   }
+  
+  public int lineNumber() {
+    return mutantLocation.lineNumber;
+  }
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder("{ \"d\" : ");
-    builder.append(detected).append(", \"s\" : \"").append(mutantStatus).append("\", \"c\" : \"").append(className).append("\", \"mname\" : \"").append(mutator.getName())
-      .append("\", \"mdesc\" : \"").append(mutator.getDescription()).append("\", \"sourceFile\" : \"").append(sourceFile).append("\"  }");
+    StringBuilder builder = new StringBuilder()
+      .append("{ \"d\" : ").append(detected)
+      .append(", \"s\" : \"").append(mutantStatus).append("\"")
+      .append(", \"c\" : \"").append(mutantLocation.getClassName()).append("\"")
+      .append(", \"mname\" : \"").append(mutator.getName()).append("\"")
+      .append(", \"mdesc\" : \"").append(mutator.getDescription()).append("\"")
+      .append(", \"sourceFile\" : \"").append(mutantLocation.getSourceFile()).append("\"")
+      .append(", \"mmethod\" : \"").append(mutantLocation.getMutatedMethod()).append("\"")
+      .append(", \"l\" : \"").append(mutantLocation.getLineNumber()).append("\"");
+
+    if (killingTest != null) {
+      builder.append(", \"killtest\" : \"").append(killingTest).append("\"");
+    }
+
+    builder.append(" }");
     return builder.toString();
   }
 

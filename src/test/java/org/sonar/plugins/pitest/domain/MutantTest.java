@@ -32,37 +32,30 @@ public class MutantTest {
   @Test
   public void should_get_path_to_java_source_file() {
     // given
-    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR);
+    Mutant mutant = new TestMutantBuilder().className("com.foo.Bar").sourceFile("Bar.java").build();
     // when
     String path = mutant.sourceRelativePath();
     // then
     assertThat(path).isEqualTo("com/foo/Bar.java");
   }
 
-  @Test
-  public void should_get_path_to_kotlin_source_file() {
-    // given
-    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar", 17, INLINE_CONSTANT_MUTATOR, "Bar.kt");
-    // when
-    String path = mutant.sourceRelativePath();
-    // then
-    assertThat(path).isEqualTo("Bar.kt");
-  }
 
-  @Test
-  public void should_get_path_to_source_file_for_an_anonymous_inner_class() {
-    // given
-    Mutant mutant = new Mutant(true, MutantStatus.KILLED, "com.foo.Bar$1", 17, INLINE_CONSTANT_MUTATOR, "com/foo/Bar.java");
-    // when
-    String path = mutant.sourceRelativePath();
-    // then
-    assertThat(path).isEqualTo("com/foo/Bar.java");
-  }
+
+//  @Test
+//  public void should_get_path_to_source_file_for_an_anonymous_inner_class() {
+//    // given
+//    Mutant mutant = new TestMutantBuilder().className(mutator(Mutator.CONSTRUCTOR).build();
+//    //new Mutant(true, MutantStatus.KILLED, "com.foo.Bar$1", "mutatedMethod", 17, INLINE_CONSTANT_MUTATOR, "com/foo/Bar.java");
+//    // when
+//    String path = mutant.sourceRelativePath();
+//    // then
+//    assertThat(path).isEqualTo("com/foo/Bar.java");
+//  }
 
   @Test
   public void verify_description() {
     // given
-    Mutant mutant = new Mutant(true, MutantStatus.SURVIVED, "com.foo.Bar", 17, Mutator.CONSTRUCTOR.getKey(), "Bar.kt");
+    Mutant mutant = new TestMutantBuilder().mutator(Mutator.CONSTRUCTOR).build();
     // when
     String path = mutant.violationDescription();
     // then
@@ -70,25 +63,25 @@ public class MutantTest {
   }
 
   @Test
-  public void verify_string_format_with_provided_source_file() {
+  public void verify_json() {
     // given
-    Mutant mutant = new Mutant(true, MutantStatus.SURVIVED, "com.foo.Bar", 17, Mutator.CONSTRUCTOR.getKey(), "Bar.kt");
+    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.SURVIVED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR).sourceFile("Bar.kt").build(); 
     // when
     String string = mutant.toString();
     // then
     assertThat(string).isEqualTo(
-      "{ \"d\" : true, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.Bar\", \"mname\" : \"Constructor Calls Mutator\", \"mdesc\" : \"A constructor call has been removed\", \"sourceFile\" : \"Bar.kt\"  }");
+      "{ \"d\" : true, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.Bar\", \"mname\" : \"Constructor Calls Mutator\", \"mdesc\" : \"A constructor call has been removed\", \"sourceFile\" : \"Bar.kt\", \"mmethod\" : \"mutatedMethod\", \"l\" : \"17\" }");
   }
 
   @Test
-  public void verify_string_format_with_derived_source_file() {
+  public void verify_json_with_killing_test() {
     // given
-    Mutant mutant = new Mutant(true, MutantStatus.SURVIVED, "com.foo.Bar", 17, Mutator.CONSTRUCTOR.getKey());
+    Mutant mutant = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.Bar").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.CONSTRUCTOR).sourceFile("Bar.kt").killingTest("killingTest").build(); 
     // when
     String string = mutant.toString();
     // then
     assertThat(string).isEqualTo(
-      "{ \"d\" : true, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.Bar\", \"mname\" : \"Constructor Calls Mutator\", \"mdesc\" : \"A constructor call has been removed\", \"sourceFile\" : \"com/foo/Bar.java\"  }");
+      "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.Bar\", \"mname\" : \"Constructor Calls Mutator\", \"mdesc\" : \"A constructor call has been removed\", \"sourceFile\" : \"Bar.kt\", \"mmethod\" : \"mutatedMethod\", \"l\" : \"17\", \"killtest\" : \"killingTest\" }");
   }
-
+  
 }

@@ -25,7 +25,7 @@ package org.sonar.plugins.pitest.domain;
  * @author bwflood
  *
  */
-enum Mutator {
+public enum Mutator {
   INVERT_NEGS(
     "org.pitest.mutationtest.engine.gregor.mutators.InvertNegsMutator", "Invert Negatives Mutator",
     "A number has been replaced by its opposite"),

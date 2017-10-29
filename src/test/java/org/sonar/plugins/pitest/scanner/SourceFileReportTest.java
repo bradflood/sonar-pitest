@@ -21,7 +21,9 @@ package org.sonar.plugins.pitest.scanner;
 
 import org.junit.Test;
 import org.sonar.plugins.pitest.domain.Mutant;
+import org.sonar.plugins.pitest.domain.TestMutantBuilder;
 import org.sonar.plugins.pitest.domain.MutantStatus;
+import org.sonar.plugins.pitest.domain.Mutator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,29 +33,57 @@ public class SourceFileReportTest {
   public static final String RETURN_VALS_MUTATOR = "org.pitest.mutationtest.engine.gregor.mutators.ReturnValsMutator";
 
   @Test
-  public void should_generate_a_json_string_with_all_data() {
+  public void should_have_correct_relative_path() {
     // given
-    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 17, INLINE_CONSTANT_MUTATOR, "com/foo/bar/Qix.java");
-    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.Qix", 17, RETURN_VALS_MUTATOR, "com/foo/bar/Qix.java");
-    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 42, INLINE_CONSTANT_MUTATOR, "com/foo/bar/Qix.java");
+    Mutant m1 = new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17)
+      .mutator(Mutator.INLINE_CONS).sourceFile("Qix.java").killingTest("killingtest93").build();
+
+    // when
+    SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
+    fileMutants.addMutant(m1);
+    
+    // then
+    assertThat(fileMutants.getRelativePath()).isEqualTo("com/foo/bar/Qix.java");
+  }
+  
+  @Test
+  public void should_generate_a_json_string_with_all_data_from_one_line() {
+    // given
+    Mutant m1 = new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17)
+      .mutator(Mutator.INLINE_CONS).sourceFile("Qix.java").killingTest("killingtest93").build();
+    Mutant m2 = new TestMutantBuilder().detected(false).mutantStatus(MutantStatus.SURVIVED).className("com.foo.bar.Qix").mutatedMethod("anotherMutatedMethod").lineNumber(17)
+      .mutator(Mutator.RETURN_VALS).sourceFile("Qix.java").build();
+
     // when
     SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
     fileMutants.addMutant(m1);
     fileMutants.addMutant(m2);
-    fileMutants.addMutant(m3);
     // then
     String result = fileMutants.toJSON();
     assertThat(result)
       .isEqualTo("{\"17\":[" +
-        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  },"
+        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"Qix.java\", \"mmethod\" : \"mutatedMethod\", \"l\" : \"17\", \"killtest\" : \"killingtest93\" },"
         +
-        "{ \"d\" : false, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Return Values Mutator\", \"mdesc\" : \"The return value of a method call has been replaced\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }"
-        +
-        "]," +
-        "\"42\":[" +
-        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"com/foo/bar/Qix.java\"  }"
+        "{ \"d\" : false, \"s\" : \"SURVIVED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Return Values Mutator\", \"mdesc\" : \"The return value of a method call has been replaced\", \"sourceFile\" : \"Qix.java\", \"mmethod\" : \"anotherMutatedMethod\", \"l\" : \"17\" }"
         +
         "]}");
+  }
+
+  @Test
+  public void should_generate_a_json_string_with_one_mutant() {
+    // given
+    Mutant m1 = new TestMutantBuilder().detected(true).mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17)
+      .mutator(Mutator.INLINE_CONS).sourceFile("Qix.java").killingTest("killingtest93").build();
+
+    // when
+    SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
+    fileMutants.addMutant(m1);
+    // then
+    String result = fileMutants.toJSON();
+    assertThat(result)
+      .isEqualTo("{\"17\":[" +
+        "{ \"d\" : true, \"s\" : \"KILLED\", \"c\" : \"com.foo.bar.Qix\", \"mname\" : \"Inline Constant Mutator\", \"mdesc\" : \"An inline constant has been changed\", \"sourceFile\" : \"Qix.java\", \"mmethod\" : \"mutatedMethod\", \"l\" : \"17\", \"killtest\" : \"killingtest93\" }"
+        + "]}");
   }
 
   @Test
@@ -66,27 +96,58 @@ public class SourceFileReportTest {
     assertThat(json).isNullOrEmpty();
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void fails_if_relative_paths_dont_match() {
+    // given
+    Mutant m1 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Foo").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXP_MEMBER_VAR)
+      .sourceFile("Foo.kt").build();
+
+    // when
+    SourceFileReport fileMutants = new SourceFileReport("com/foo/bar/Qix.java");
+    fileMutants.addMutant(m1);
+  }
+
   @Test
   public void should_collect_mutant_metrics() {
     // given
-    Mutant m1 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 17, "key1", "com/foo/bar/Qix.java");
-    Mutant m2 = new Mutant(false, MutantStatus.SURVIVED, "com.foo.bar.Qix", 17, "key2", "com/foo/bar/Qix.java");
-    Mutant m3 = new Mutant(true, MutantStatus.KILLED, "com.foo.bar.Qix", 15, "key3", "com/foo/bar/Qix.java");
+
+    Mutant m1 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.INLINE_CONS)
+      .sourceFile("Qix.java").build();
+    Mutant m2 = new TestMutantBuilder().mutantStatus(MutantStatus.SURVIVED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(17).mutator(Mutator.RETURN_VALS)
+      .sourceFile("Qix.java").build();
+    Mutant m3 = new TestMutantBuilder().mutantStatus(MutantStatus.KILLED).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXP_MEMBER_VAR)
+      .sourceFile("Qix.java").build();
+    Mutant m4 = new TestMutantBuilder().mutantStatus(MutantStatus.NO_COVERAGE).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42)
+      .mutator(Mutator.EXP_MEMBER_VAR).sourceFile("Qix.java").build();
+    Mutant m5 = new TestMutantBuilder().mutantStatus(MutantStatus.UNKNOWN).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42)
+      .mutator(Mutator.EXP_MEMBER_VAR).sourceFile("Qix.java").build();
+    Mutant m6 = new TestMutantBuilder().mutantStatus(MutantStatus.OTHER).className("com.foo.bar.Qix").mutatedMethod("mutatedMethod").lineNumber(42).mutator(Mutator.EXP_MEMBER_VAR)
+      .sourceFile("Qix.java").build();
+
     SourceFileReport sourceFileReport = new SourceFileReport("com/foo/bar/Qix.java");
 
     // when
     sourceFileReport.addMutant(m1);
     sourceFileReport.addMutant(m2);
     sourceFileReport.addMutant(m3);
+    sourceFileReport.addMutant(m4);
+    sourceFileReport.addMutant(m5);
+    sourceFileReport.addMutant(m6);
 
     // then
-    assertThat(sourceFileReport.getMutationsTotal()).isEqualTo(3);
-    // assertThat(sourceFileReport.getMutationsDetected()).isEqualTo(2);
+    assertThat(sourceFileReport.getMutationsTotal()).isEqualTo(6);
+    assertThat(sourceFileReport.getMutants()).hasSize(6);
     assertThat(sourceFileReport.getMutationsKilled()).isEqualTo(2);
-    // assertThat(sourceFileReport.getMutationsMemoryError()).isEqualTo(0);
-    assertThat(sourceFileReport.getMutationsNoCoverage()).isEqualTo(0);
-    // assertThat(sourceFileReport.getMutationsTimedOut()).isEqualTo(0);
-    assertThat(sourceFileReport.getMutationsUnknown()).isEqualTo(0);
-
+    assertThat(sourceFileReport.getMutationsSurvived()).isEqualTo(1);
+    assertThat(sourceFileReport.getMutationsNoCoverage()).isEqualTo(1);
+    assertThat(sourceFileReport.getMutationsUnknown()).isEqualTo(1);
+    assertThat(sourceFileReport.getMutationsOther()).isEqualTo(1);
+    /*
+     * NO_COVERAGE("NO_COVERAGE"),
+     * KILLED("KILLED"),
+     * SURVIVED("SURVIVED"),
+     * OTHER("TIMED_OUT", "NON_VIABLE", "MEMORY_ERROR", "RUN_ERROR"),
+     * UNKNOWN;
+     */
   }
 }

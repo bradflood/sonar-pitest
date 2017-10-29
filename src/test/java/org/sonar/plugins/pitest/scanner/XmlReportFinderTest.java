@@ -28,19 +28,50 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class XmlReportFinderTest {
 
-  @Ignore("flawed logic - replace")
   @Test
-  public void should_find_report_file() {
+  public void should_find_latest_report_file_with_one_timestamped_folder() {
     // given
     XmlReportFinder finder = new XmlReportFinder();
-    File xmlFile = new File(Resources.getResource("mutations.xml").getFile());
-    File directory = xmlFile.getParentFile();
+    File reportDirectory = new File(Resources.getResource("test-pit-reports-1").getFile());
 
     // when
-    File report = finder.findReport(directory);
+    File report = finder.findReport(reportDirectory);
 
     // then
-    assertThat(report).isEqualTo(xmlFile);
+    assertThat(report).isNotNull();
+    report.getAbsolutePath().endsWith("123/mutations.xml");
+  }
+  
+  @Test
+  public void should_find_latest_report_file_with_two_timestamped_folders() {
+    // given
+    XmlReportFinder finder = new XmlReportFinder();
+    File reportDirectory = new File(Resources.getResource("test-pit-reports-2").getFile());
+    new File(Resources.getResource("test-pit-reports-2/123/mutations.xml").getFile()).setLastModified(400);
+    new File(Resources.getResource("test-pit-reports-2/124/mutations.xml").getFile()).setLastModified(500);
+
+    // when
+    File report = finder.findReport(reportDirectory);
+
+    // then
+    assertThat(report).isNotNull();
+    report.getAbsolutePath().endsWith("124/mutations.xml");
+  }
+
+  @Test
+  public void should_find_latest_report_file_with_inconsistent_timestamp() {
+    // given
+    XmlReportFinder finder = new XmlReportFinder();
+    File reportDirectory = new File(Resources.getResource("test-pit-reports-2").getFile());
+    new File(Resources.getResource("test-pit-reports-2/123/mutations.xml").getFile()).setLastModified(600);
+    new File(Resources.getResource("test-pit-reports-2/124/mutations.xml").getFile()).setLastModified(500);
+
+    // when
+    File report = finder.findReport(reportDirectory);
+
+    // then
+    assertThat(report).isNotNull();
+    report.getAbsolutePath().endsWith("123/mutations.xml");
   }
 
   @Test
@@ -56,6 +87,18 @@ public class XmlReportFinderTest {
     assertThat(report).isNull();
   }
 
+  @Test
+  public void should_return_null_if_input_is_not_a_directory() {
+    // given
+    XmlReportFinder finder = new XmlReportFinder();
+    File directory = new File(Resources.getResource("Maze.kt").getFile());
+
+    // when
+    File report = finder.findReport(directory);
+
+    // then
+    assertThat(report).isNull();
+  }
   @Test
   public void should_return_null_if_directory_does_not_exist() {
     // given

@@ -31,7 +31,7 @@ import org.sonar.plugins.pitest.domain.Mutant;
  * Mutants for a given java source file
  */
 public class SourceFileReport {
-  public final String sourceFileRelativePath;
+  private final String sourceFileRelativePath;
   private final List<Mutant> mutants = new ArrayList<>();
   private int mutationsNoCoverage = 0;
   private int mutationsKilled = 0;
@@ -50,10 +50,10 @@ public class SourceFileReport {
     Map<Integer, List<String>> mutantsByLine = new HashMap<>();
 
     for (Mutant mutant : mutants) {
-      if (!mutantsByLine.containsKey(mutant.lineNumber)) {
-        mutantsByLine.put(mutant.lineNumber, new ArrayList<String>());
+      if (!mutantsByLine.containsKey(mutant.lineNumber())) {
+        mutantsByLine.put(mutant.lineNumber(), new ArrayList<String>());
       }
-      mutantsByLine.get(mutant.lineNumber).add(mutant.toString());
+      mutantsByLine.get(mutant.lineNumber()).add(mutant.toString());
     }
 
     StringBuilder builder = new StringBuilder();
@@ -105,6 +105,10 @@ public class SourceFileReport {
     }
   }
 
+  public String getRelativePath() {
+    return sourceFileRelativePath ;
+  }
+  
   public Collection<Mutant> getMutants() {
     return Collections.unmodifiableList(mutants);
   }
@@ -132,4 +136,11 @@ public class SourceFileReport {
   int getMutationsUnknown() {
     return mutationsUnknown;
   }
+
+  @Override
+  public String toString() {
+    return "SourceFileReport [sourceFileRelativePath=" + sourceFileRelativePath + ", mutants=" + mutants + ", mutationsNoCoverage=" + mutationsNoCoverage + ", mutationsKilled="
+      + mutationsKilled + ", mutationsSurvived=" + mutationsSurvived + ", mutationsOther=" + mutationsOther + ", mutationsUnknown=" + mutationsUnknown + "]";
+  }
+  
 }

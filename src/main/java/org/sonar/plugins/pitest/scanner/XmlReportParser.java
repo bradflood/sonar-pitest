@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.annotation.Nullable;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -37,7 +38,9 @@ import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.pitest.domain.Mutant;
+import org.sonar.plugins.pitest.domain.MutantLocation;
 import org.sonar.plugins.pitest.domain.MutantStatus;
+import org.sonar.plugins.pitest.domain.Mutator;
 
 @ScannerSide
 @ExtensionPoint
@@ -49,16 +52,36 @@ public class XmlReportParser {
     return new Parser().parse(report);
   }
 
-  private static class Parser {
+  private class Parser {
 
     private XMLStreamReader stream;
     private final Collection<Mutant> mutants = new ArrayList<>();
 
     private boolean detected;
     private MutantStatus mutantStatus;
-    private String mutatedClass;
     private String sourceFile;
+    private String mutatedClass;
+    private String mutatedMethod;
+    private String methodDescription;
     private int lineNumber;
+    private String mutator;
+    private int index; 
+    private String killingTest;
+    private String description; 
+
+    private void reset() {
+      detected = false;
+      mutantStatus = null;
+      sourceFile = null;
+      mutatedClass = null;
+      mutatedMethod = null; 
+      methodDescription = null;
+      lineNumber = 0;
+      mutator = null;
+      index = 0;
+      killingTest = null;
+      description = null;
+    }
 
     public Collection<Mutant> parse(File file) {
 
@@ -69,8 +92,11 @@ public class XmlReportParser {
         stream = xmlFactory.createXMLStreamReader(reader);
 
         while (stream.hasNext()) {
-          if (stream.next() == XMLStreamConstants.START_ELEMENT) {
+          int next = stream.next();
+          if (next == XMLStreamConstants.START_ELEMENT) {
             parseStartElement();
+          } else if (next == XMLStreamConstants.END_ELEMENT) {
+            processEndElement();
           }
         }
       } catch (IOException | XMLStreamException | IllegalArgumentException e) {
@@ -86,26 +112,30 @@ public class XmlReportParser {
       String tagName = stream.getLocalName();
 
       if ("mutation".equals(tagName)) {
+        reset();
         handleMutationTag();
+      } else if ("sourceFile".equals(tagName)) {
+        handleSourceFileTag();
       } else if ("mutatedClass".equals(tagName)) {
         handleMutatedClassTag();
+      } else if ("mutatedMethod".equals(tagName)) {
+        handleMutatedMethod();
+      } else if ("methodDescription".equals(tagName)) {
+        handleMethodDescription();      
       } else if ("lineNumber".equals(tagName)) {
         handleLineNumber();
-      } else if ("sourceFile".equals(tagName)) {
-        handleSourceFile();
       } else if ("mutator".equals(tagName)) {
         handleMutator();
+      } else if ("index".equals(tagName)) {
+        handleIndex();
+      } else if ("killingTest".equals(tagName)) {
+        handleKillingTest();
+      } else if ("description".equals(tagName)) {
+        handleDescription();
       } else {
-        /*
-         * tags being ignored:
-         * index
-         * killingTest
-         * description
-         * mutatedMethod
-         * methodDescription
-         */
-        if (LOG.isTraceEnabled()) {
-          LOG.trace("Ignoring tag {}", tagName);
+        if (LOG.isDebugEnabled()) {
+          // all are processed now, so this is a new element added by pitest
+          LOG.debug("Ignoring tag {}", tagName);
         }
       }
     }
@@ -115,6 +145,14 @@ public class XmlReportParser {
       mutantStatus = MutantStatus.fromPitestDetectionStatus(getAttribute("status"));
     }
 
+    private void handleSourceFileTag() {
+      try {
+        sourceFile = stream.getElementText();
+      } catch (Exception e) {
+        logException(e.getClass().getSimpleName(), "processing tag sourceFile");
+      }
+    }
+    
     private void handleMutatedClassTag() {
       try {
         mutatedClass = stream.getElementText();
@@ -123,14 +161,22 @@ public class XmlReportParser {
       }
     }
 
-    private void handleSourceFile() {
+    private void handleMutatedMethod() {
       try {
-        sourceFile = stream.getElementText();
+        mutatedMethod = stream.getElementText();
       } catch (Exception e) {
-        logException(e.getClass().getSimpleName(), "processing tag sourceFile");
+        logException(e.getClass().getSimpleName(), "processing tag mutatedMethod");
       }
-    }
+    }    
 
+    private void handleMethodDescription() {
+      try {
+        methodDescription = stream.getElementText();
+      } catch (Exception e) {
+        logException(e.getClass().getSimpleName(), "processing tag methodDescription");
+      }
+    }   
+    
     private void handleLineNumber() {
       try {
         lineNumber = Integer.parseInt(stream.getElementText().trim());
@@ -140,14 +186,43 @@ public class XmlReportParser {
     }
 
     private void handleMutator() {
-      String mutator;
       try {
         mutator = stream.getElementText();
-        mutants.add(new Mutant(detected, mutantStatus, mutatedClass, lineNumber, mutator, sourceFile));
       } catch (Exception e) {
         logException(e.getClass().getSimpleName(), "processing tag mutator");
       }
+    }
+    
+    private void handleIndex() {
+      try {
+        index = Integer.parseInt(stream.getElementText().trim());
+      } catch (Exception e) {
+        logException(e.getClass().getSimpleName(), "processing tag index");
+      }
+    }
+    
+    private void handleKillingTest() {
+      try {
+        killingTest = stream.getElementText();
+      } catch (Exception e) {
+        logException(e.getClass().getSimpleName(), "processing tag killingTest");
+      }
+    } 
+    
+    private void handleDescription() {
+      try {
+        description = stream.getElementText();
+      } catch (Exception e) {
+        logException(e.getClass().getSimpleName(), "processing tag description");
+      }
+    }
 
+    private void processEndElement() {
+      String tagName = stream.getLocalName();
+      if ("mutation".equals(tagName)) {
+        MutantLocation location = new MutantLocation(mutatedClass, sourceFile, mutatedMethod, methodDescription, lineNumber);
+        mutants.add(new Mutant(detected, mutantStatus, location, mutator, index, killingTest, description));
+      } 
     }
 
     private void logException(String exceptionName, String activity) {
